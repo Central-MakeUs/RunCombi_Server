@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: server
+  profiles:
+    active: ${RUN_ENV:dev}

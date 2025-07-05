@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/db/runcombi
+    driver-class-name: org.h2.Driver
+    username: test
+    password: test
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
