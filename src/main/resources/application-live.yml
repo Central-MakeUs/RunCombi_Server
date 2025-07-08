@@ -9,3 +9,5 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
