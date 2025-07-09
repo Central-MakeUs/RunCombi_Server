@@ -11,3 +11,7 @@ spring:
       ddl-auto: update
   jwt:
     secret-key: "862d446fe2b0a3fab0f49e1fcf909a2e1fb103603d777a6b37b08f422883a241"
+
+logging:
+  level:
+    root: info

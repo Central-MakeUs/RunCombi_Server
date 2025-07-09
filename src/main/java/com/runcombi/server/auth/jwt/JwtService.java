@@ -1,5 +1,6 @@
 package com.runcombi.server.auth.jwt;
 
+import com.runcombi.server.domain.member.entity.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -24,6 +25,9 @@ public class JwtService {
     @Value("${spring.jwt.secret-key}")
     private String SECRET_KEY;
     private final UserDetailServiceImpl userDetailService;
+
+    private Long accessTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 7일
+    private Long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 30일
 
     public String validateToken(String token) {
         Date now = new Date();
@@ -73,5 +77,37 @@ public class JwtService {
     public Key getKeyByBase64(String encodedSecretKey) {
         byte[] byteKey = Decoders.BASE64.decode(encodedSecretKey);
         return Keys.hmacShaKeyFor(byteKey);
+    }
+
+    public String createAccessToken(Long memberId, Role role) {
+        Date now = new Date();
+        String base64EncodedSecretKey = encodeBase64(SECRET_KEY);
+        Key key = getKeyByBase64(base64EncodedSecretKey);
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuedAt(now)
+                .setSubject(String.valueOf(memberId))
+                .setExpiration(new Date(now.getTime() + accessTokenExpireTime))  // 7일
+                .claim("memberId", memberId)
+                .claim("role", role)
+                .signWith(key)
+                .compact();
+    }
+
+    public String createRefreshToken(Long memberId, Role role) {
+        Date now = new Date();
+        String base64EncodedSecretKey = encodeBase64(SECRET_KEY);
+        Key key = getKeyByBase64(base64EncodedSecretKey);
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuedAt(now)
+                .setSubject(String.valueOf(memberId))
+                .setExpiration(new Date(now.getTime() + refreshTokenExpireTime))  // 30일
+                .claim("memberId", memberId)
+                .claim("role", role)
+                .signWith(key)
+                .compact();
     }
 }
