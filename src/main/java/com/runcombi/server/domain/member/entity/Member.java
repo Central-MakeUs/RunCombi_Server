@@ -51,6 +51,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private int registerStep; // step : 1(계정 등록만), 2(필요 정보 기입해야 함)
 
+    private String profileImgUrl;
+
+    private String profileImgKey;
+
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private final List<Pet> pets = new ArrayList<>();
 

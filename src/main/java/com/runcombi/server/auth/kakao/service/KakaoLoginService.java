@@ -12,10 +12,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -56,10 +53,11 @@ public class KakaoLoginService {
             );
 
             Map<String, Object> body = response.getBody();
+            log.info("전달받은 body ::::: {}", body);
             Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
             if (kakaoAccount == null) {
                 // 유효하지 않은 카카오 토큰인 경우
-                log.error("invalid kakao token ::::: {}", kakaoAccessToken);
+                log.error("invalid kakao token(kakaoAcount == null) ::::: {}", kakaoAccessToken);
                 throw new CustomException(KAKAO_TOKEN_INVALID);
             }
             userEmail = (String) kakaoAccount.get("email");
@@ -67,9 +65,15 @@ public class KakaoLoginService {
             // 카카오 토큰이 만료된 경우
             log.error("expired kakao token ::::: {}", kakaoAccessToken);
             throw new CustomException(KAKAO_TOKEN_EXPIRED);
-        } catch(JwtException | HttpClientErrorException e) {
+        } catch(JwtException e) {
             // 유효하지 않은 카카오 토큰인 경우
-            log.error("invalid kakao token ::::: {}", kakaoAccessToken);
+            log.error("invalid kakao token(JwtException) ::::: {}", kakaoAccessToken);
+            throw new CustomException(KAKAO_TOKEN_INVALID);
+        } catch(HttpClientErrorException e) {
+            // 유효하지 않은 카카오 토큰인 경우
+            log.error("invalid kakao token(HttpClientErrorException) ::::: {}", kakaoAccessToken);
+            log.error("응답코드 ::::: {}", e.getStatusCode());
+            log.error("응답바디 ::::: {}", e.getResponseBodyAsString());
             throw new CustomException(KAKAO_TOKEN_INVALID);
         }
 
