@@ -89,7 +89,7 @@ public class JwtService {
                 .setIssuedAt(now)
                 .setSubject(String.valueOf(memberId))
                 .setExpiration(new Date(now.getTime() + accessTokenExpireTime))  // 7일
-                .claim("memberId", memberId)
+                .setSubject(String.valueOf(memberId)) // memberId 값 subject 로 설정
                 .claim("role", role)
                 .signWith(key)
                 .compact();
