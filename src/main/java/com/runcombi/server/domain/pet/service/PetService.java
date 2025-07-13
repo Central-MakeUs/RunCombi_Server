@@ -24,10 +24,9 @@ public class PetService {
     private final S3Service s3Service;
     @Transactional
     public List<Pet> getPetList(Member member) {
-        return petRepository.findByMember(member);
+        return petRepository.findAllByMember(member);
     }
 
-    @Transactional
     public Pet setPetDetail(Member member, SetPetDetailDto petDetail) {
         Pet pet = new Pet();
         pet.setPetDetail(petDetail);
@@ -51,8 +50,11 @@ public class PetService {
     }
 
     @Transactional
-    public void deletePet(Pet pet) {
-        s3Service.deleteImage(pet.getPetImageKey());
+    public void deletePet(Pet pet, Member member) {
+        if(pet.getPetImageKey() != null) {
+            s3Service.deleteImage(pet.getPetImageKey());
+        }
         petRepository.delete(pet);
+        member.deletePet(pet);
     }
 }
