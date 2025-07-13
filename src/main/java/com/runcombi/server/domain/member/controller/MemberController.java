@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.member.controller;
 
+import com.runcombi.server.domain.member.dto.AgreeTermsRequestDto;
 import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
 import com.runcombi.server.domain.member.entity.Member;
@@ -44,22 +45,19 @@ public class MemberController {
     public ApiResponse<GetMemberDetailDto> getMemberDetail(
             @AuthenticationPrincipal Member member
     ) {
+        log.info("member.getMemberId ::::: {}", member.getMemberId());
         List<Pet> petList = petService.getPetList(member);
-        GetMemberDetailDto getMemberDetailDto = GetMemberDetailDto.builder()
-                .member(member)
-                .petList(petList)
-                .memberStatus(member.getIsActive())
-                .build();
+        log.info("petList ::::: {}", petList);
+        GetMemberDetailDto getMemberDetailDto = memberService.getMemberPetDetail(member, petList);
         return ApiResponse.onSuccess(getMemberDetailDto);
     }
 
     @PostMapping("/member/setMemberTerms")
     public ApiResponse<String> setMemberTerms(
             @AuthenticationPrincipal Member member,
-            @RequestBody List<TermType> agreeTermsList
+            @RequestBody AgreeTermsRequestDto agreeTermsList
     ) {
-        memberService.setMemberTerms(agreeTermsList, member);
-
+        memberService.setMemberTerms(agreeTermsList.getAgreeTermList(), member);
 
         return ApiResponse.onSuccess("약관 동의 저장에 성공하였습니다.");
     }

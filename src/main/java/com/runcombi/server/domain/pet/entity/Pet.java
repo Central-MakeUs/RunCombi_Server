@@ -5,10 +5,7 @@ import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.pet.dto.SetPetDetailDto;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -20,6 +17,7 @@ public class Pet extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long petId;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -45,4 +43,5 @@ public class Pet extends BaseTimeEntity {
         this.petImageUrl = s3ImageReturnDto.getImageUrl();
         this.petImageKey = s3ImageReturnDto.getImageKey();
     }
+
 }

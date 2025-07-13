@@ -1,8 +1,7 @@
 package com.runcombi.server.domain.member.dto;
 
-import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.MemberStatus;
-import com.runcombi.server.domain.pet.entity.Pet;
+import com.runcombi.server.domain.pet.dto.PetDto;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class GetMemberDetailDto {
-    private Member member;
-    private List<Pet> petList;
+    private MemberDto member;
+    private List<PetDto> petList;
     private MemberStatus memberStatus;
 }

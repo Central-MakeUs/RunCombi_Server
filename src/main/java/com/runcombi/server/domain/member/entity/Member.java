@@ -49,8 +49,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private String refreshToken;
 
-    private int registerStep; // step : 1(계정 등록만), 2(필요 정보 기입해야 함)
-
     private String profileImgUrl;
 
     private String profileImgKey;
@@ -58,7 +56,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Pet> pets = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<MemberTerm> memberTerms; // 약관 동의
 
     // 기타 필드 및 메서드
@@ -72,6 +70,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     public void addPet(Pet pet) {
         this.pets.add(pet);
+        pet.setMember(this);
+    }
+
+    public void deletePet(Pet pet) {
+        this.pets.remove(pet);
     }
 
     public void updateIsActive(MemberStatus memberStatus) {
