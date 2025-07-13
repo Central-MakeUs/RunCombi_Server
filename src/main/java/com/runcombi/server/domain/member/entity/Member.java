@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.member.entity;
 
 import com.runcombi.server.domain.base.BaseTimeEntity;
+import com.runcombi.server.domain.pet.entity.Pet;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,9 +45,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private MemberStatus isActive;  // 활동상태
 
-    @Enumerated(EnumType.STRING)
-    private RunStyle runStyle;  // 산책 스타일
-
     private String refreshToken;
 
     private int registerStep; // step : 1(계정 등록만), 2(필요 정보 기입해야 함)
@@ -55,11 +53,23 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private String profileImgKey;
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private final List<Pet> pets = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Pet> pets = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberTerm> memberTerms; // 약관 동의
+
+    // 기타 필드 및 메서드
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void addMemberTerm(MemberTerm memberTerm) {
+        this.memberTerms.add(memberTerm);
+    }
+
+    public void updateIsActive(MemberStatus memberStatus) {
+        this.isActive = memberStatus;
     }
 
     @Override

@@ -5,5 +5,6 @@ public enum MemberStatus {
     DELETE,     // 탈퇴 회원
     REPORT,     // 신고당한 회원
     DORMANCY,    // 휴면 회원
-    PENDING     // 추가정보 대기 회원
+    PENDING_AGREE,  // 약관동의 대기 회원
+    PENDING_MEMBER_DETAIL   // 멤버, 펫 정보 기입 대기 회원
 }
