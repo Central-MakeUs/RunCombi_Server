@@ -1,7 +1,9 @@
 package com.runcombi.server.domain.member.entity;
 
 import com.runcombi.server.domain.base.BaseTimeEntity;
+import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
 import com.runcombi.server.domain.pet.entity.Pet;
+import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,8 +70,24 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.memberTerms.add(memberTerm);
     }
 
+    public void addPet(Pet pet) {
+        this.pets.add(pet);
+    }
+
     public void updateIsActive(MemberStatus memberStatus) {
         this.isActive = memberStatus;
+    }
+
+    public void setMemberDetail(SetMemberDetailDto memberDetailDto) {
+        this.nickname = memberDetailDto.getNickname();
+        this.gender = memberDetailDto.getGender();
+        this.height = memberDetailDto.getHeight();
+        this.weight = memberDetailDto.getWeight();
+    }
+
+    public void setMemberImage(S3ImageReturnDto s3ImageReturnDto) {
+        this.profileImgUrl = s3ImageReturnDto.getImageUrl();
+        this.profileImgKey = s3ImageReturnDto.getImageKey();
     }
 
     @Override
