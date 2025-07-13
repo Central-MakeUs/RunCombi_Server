@@ -1,4 +1,4 @@
-package com.runcombi.server.domain.member.entity;
+package com.runcombi.server.domain.pet.entity;
 
 public enum RunStyle {
     RUNNING,      // 에너지가 넘쳐요!
