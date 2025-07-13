@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.runcombi.server.global.exception.CustomException;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,7 @@ import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 public class S3Service {
     private final AmazonS3 s3Client;
     @Value("${spring.s3.bucket-name}")
-    private final String bucketName;
+    private String bucketName;
     private String defaultUrl = "https://runcombi.s3.ap-northeast-2.amazonaws.com/";
 
     public S3ImageReturnDto uploadMemberImage(MultipartFile file, Long memberId) {
