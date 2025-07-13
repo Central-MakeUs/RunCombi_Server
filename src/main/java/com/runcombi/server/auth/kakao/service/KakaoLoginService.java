@@ -91,7 +91,7 @@ public class KakaoLoginService {
                     .email(finalUserEmail)
                     .role(Role.USER)
                     .provider(Provider.KAKAO)
-                    .isActive(MemberStatus.PENDING)
+                    .isActive(MemberStatus.PENDING_AGREE)
                     .build();
             Member savedMember = memberRepository.save(newMember);
 
@@ -109,15 +109,16 @@ public class KakaoLoginService {
                     .build();
         }else {
             Member member = optionalMember.get();
+            MemberStatus memberStatus = member.getIsActive();
 
             String accessToken = jwtService.createRefreshToken(member.getMemberId(), member.getRole());
             String refreshToken = jwtService.createRefreshToken(member.getMemberId(), member.getRole());
 
-            // 회원인 경우
-            if(member.getIsActive() == MemberStatus.PENDING) {
+            // 추가 정보 기입이 필요한 회원일때 응답 (Member 의 isActive 값이 PENDING_AGREE 또는 PENDING_MEMBER_DETAIL 일 경우 응답에 isRegistered("N") 을 담아 리턴
+            if(memberStatus == MemberStatus.PENDING_AGREE ||
+                    memberStatus == MemberStatus.PENDING_MEMBER_DETAIL) {
                 member.updateRefreshToken(refreshToken);
 
-                // 추가 정보 기입이 필요한 회원일때 응답 (Member 의 isActive 값이 PENDING 일 경우 응답에 isRegistered("N") 을 담아 리턴
                 return LoginResponseDTO
                         .builder()
                         .email(member.getEmail())
@@ -126,6 +127,7 @@ public class KakaoLoginService {
                         .finishRegister("N")
                         .build();
             }else {
+                // 회원가입이 모두 끝난 회원인 경우
                 member.updateRefreshToken(refreshToken);
                 
                 // 회원가입이 모두 완료된 회원 - Access 토큰, Refresh 토큰 발급
