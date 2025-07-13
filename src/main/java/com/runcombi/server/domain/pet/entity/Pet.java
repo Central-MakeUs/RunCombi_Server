@@ -2,6 +2,8 @@ package com.runcombi.server.domain.pet.entity;
 
 import com.runcombi.server.domain.base.BaseTimeEntity;
 import com.runcombi.server.domain.member.entity.Member;
+import com.runcombi.server.domain.pet.dto.SetPetDetailDto;
+import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +33,16 @@ public class Pet extends BaseTimeEntity {
 
     private String petImageUrl;
     private String petImageKey;
+
+    public void setPetDetail(SetPetDetailDto petDetailDto) {
+        this.name = petDetailDto.getName();
+        this.age = petDetailDto.getAge();
+        this.weight = petDetailDto.getWeight();
+        this.runStyle = petDetailDto.getRunStyle();
+    }
+
+    public void setPetImage(S3ImageReturnDto s3ImageReturnDto) {
+        this.petImageUrl = s3ImageReturnDto.getImageUrl();
+        this.petImageKey = s3ImageReturnDto.getImageKey();
+    }
 }

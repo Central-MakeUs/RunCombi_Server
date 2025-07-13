@@ -10,7 +10,12 @@ spring:
     hibernate:
       ddl-auto: update
   jwt:
-    secret-key: "862d446fe2b0a3fab0f49e1fcf909a2e1fb103603d777a6b37b08f422883a241"
+    secret-key: ${JWT_SECRET_KEY}
+  s3:
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    region: ${S3_REGION}
+    bucket-name: ${S3_BUCKET_NAME}
 
 logging:
   level:
