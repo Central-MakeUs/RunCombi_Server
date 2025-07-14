@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.pet.service;
 
 import com.runcombi.server.domain.member.entity.Member;
+import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.pet.dto.SetPetDetailDto;
 import com.runcombi.server.domain.pet.entity.Pet;
 import com.runcombi.server.domain.pet.repository.PetRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 @Slf4j
 public class PetService {
     private final PetRepository petRepository;
+    private final MemberRepository memberRepository;
     private final S3Service s3Service;
     @Transactional
     public List<Pet> getPetList(Member member) {
@@ -51,10 +54,22 @@ public class PetService {
 
     @Transactional
     public void deletePet(Pet pet, Member member) {
+        // 펫 이미지와 펫 정보를 삭제
         if(pet.getPetImageKey() != null) {
             s3Service.deleteImage(pet.getPetImageKey());
         }
         petRepository.delete(pet);
         member.deletePet(pet);
+    }
+
+    @Transactional
+    public void setMemberPetDetail(Member contextMember, SetPetDetailDto petDetail, MultipartFile petImage) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        if(member.getPets().size() == 2) throw new CustomException(PET_COUNT_EXCEEDED);
+        Pet pet = setPetDetail(member, petDetail);
+        if(petImage != null) {
+            S3ImageReturnDto petImageReturnDto = s3Service.uploadPetImage(petImage, pet.getPetId());
+            setPetImage(pet, petImageReturnDto);
+        };
     }
 }
