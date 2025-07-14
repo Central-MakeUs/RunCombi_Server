@@ -32,12 +32,10 @@ public class MemberController {
             @AuthenticationPrincipal Member member,
             @RequestPart("memberDetail") SetMemberDetailDto memberDetail,
             @RequestPart(value = "memberImage", required = false) MultipartFile memberImage,
-            @RequestPart("firstPet") SetPetDetailDto  firstPetDetail,
-            @RequestPart(value = "firstPetImage", required = false) MultipartFile firstPetImage,
-            @RequestPart(value = "secondPet", required = false) SetPetDetailDto  secondPetDetail,
-            @RequestPart(value = "secondPetImage", required = false) MultipartFile secondPetImage
+            @RequestPart("pet") SetPetDetailDto  petDetail,
+            @RequestPart(value = "petImage", required = false) MultipartFile petImage
             ) {
-        memberService.setMemberPetDetail(member, memberDetail, memberImage, firstPetDetail, firstPetImage, secondPetDetail, secondPetImage);
+        memberService.setMemberPetDetail(member, memberDetail, memberImage, petDetail, petImage);
         return ApiResponse.onSuccess("정보 등록에 성공하셨습니다.");
     }
 

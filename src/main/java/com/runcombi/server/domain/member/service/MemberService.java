@@ -106,7 +106,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void setMemberPetDetail(Member contextMember, SetMemberDetailDto memberDetail, MultipartFile memberImage, SetPetDetailDto firstPetDetail, MultipartFile firstPetImage, SetPetDetailDto secondPetDetail, MultipartFile secondPetImage) {
+    public void setMemberPetDetail(Member contextMember, SetMemberDetailDto memberDetail, MultipartFile memberImage, SetPetDetailDto petDetail, MultipartFile petImage) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
         // 에러 방지코드 : 만약 사용자가 정보입력 시 오류를 발생시켰다면 이미 펫이 영속성 등록을 통해 DB에 입력된 상황
         //   > 기존 펫을 제거하고 로직 실행
@@ -114,8 +114,7 @@ public class MemberService {
 
         // 넘겨받은 데이터 유효성 검증
         memberDetailNullCheck(memberDetail);
-        petService.petDetailNullCheck(firstPetDetail);
-        if(secondPetDetail != null) petService.petDetailNullCheck(secondPetDetail);
+        petService.petDetailNullCheck(petDetail);
 
         // 회원 정보 저장
         setMemberDetail(member, memberDetail);
@@ -126,21 +125,11 @@ public class MemberService {
         }
 
         // 첫번째 펫 정보 저장
-        Pet firstPet = petService.setPetDetail(member, firstPetDetail);
-        if(firstPetImage != null) {
+        Pet firstPet = petService.setPetDetail(member, petDetail);
+        if(petImage != null) {
             // 첫번째 펫 이미지 저장
-            S3ImageReturnDto firstPetImageReturnDto = s3Service.uploadPetImage(firstPetImage, firstPet.getPetId());
+            S3ImageReturnDto firstPetImageReturnDto = s3Service.uploadPetImage(petImage, firstPet.getPetId());
             petService.setPetImage(firstPet, firstPetImageReturnDto);
-        }
-
-        // 두번째 펫 정보 저장
-        if(secondPetDetail != null) {
-            Pet secondPet = petService.setPetDetail(member, secondPetDetail);
-            // 두번째 펫 이미지 저장
-            if(secondPetImage != null) {
-                S3ImageReturnDto secondPetImageReturnDto = s3Service.uploadPetImage(secondPetImage, secondPet.getPetId());
-                petService.setPetImage(secondPet, secondPetImageReturnDto);
-            }
         }
 
         // 회원 상태를 LIVE 로 변경
