@@ -26,7 +26,6 @@ public class PetController {
             @RequestPart("pet") SetPetDetailDto petDetail,
             @RequestPart(value = "petImage", required = false) MultipartFile petImage
     ) {
-        log.info("petImage >>>>>>>>>> " + petImage);
         petService.setMemberPetDetail(member, petDetail, petImage);
         return ApiResponse.onSuccess("정보 등록에 성공하셨습니다.");
     }

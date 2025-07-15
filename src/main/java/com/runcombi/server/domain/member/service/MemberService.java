@@ -149,6 +149,7 @@ public class MemberService {
     public GetMemberDetailDto getMemberPetDetail(Member member, List<Pet> petList) {
         MemberDto memberDto = MemberDto.builder()
                 .memberId(member.getMemberId())
+                .provider(member.getProvider())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .gender(member.getGender())

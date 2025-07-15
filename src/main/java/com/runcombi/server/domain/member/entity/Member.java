@@ -57,7 +57,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private final List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<MemberTerm> memberTerms; // 약관 동의
+    private final List<MemberTerm> memberTerms  = new ArrayList<>();; // 약관 동의
 
     // 기타 필드 및 메서드
     public void updateRefreshToken(String refreshToken) {
@@ -66,6 +66,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     public void addMemberTerm(MemberTerm memberTerm) {
         this.memberTerms.add(memberTerm);
+        memberTerm.setMember(this);
     }
 
     public void addPet(Pet pet) {
