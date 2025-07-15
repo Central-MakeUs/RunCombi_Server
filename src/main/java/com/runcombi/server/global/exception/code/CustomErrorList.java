@@ -22,6 +22,7 @@ public enum CustomErrorList implements CustomErrorCode{
 
     // Pet
     PET_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "PET0001", "최대 펫 수를 초과하였습니다."),
+    PET_NOT_MATCH(HttpStatus.BAD_REQUEST, "PET0002", "회원님의 반려 동물이 아닙니다."),
 
     // S3 이미지 업로드 에러
     S3_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0001", "이미지 업로드에 실패했습니다."),
