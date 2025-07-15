@@ -18,9 +18,13 @@ public class MemberTerm {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Enumerated(EnumType.STRING)
     private TermType termType;
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

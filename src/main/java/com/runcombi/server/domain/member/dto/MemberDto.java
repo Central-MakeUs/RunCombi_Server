@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 public class MemberDto {
     private Long memberId;
+    private Provider provider; // kakao / apple
     private String email;   // 이메일
     private String nickname;    // 닉네임
     private Gender gender;  // 성별
