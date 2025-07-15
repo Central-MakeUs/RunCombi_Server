@@ -33,6 +33,10 @@ public class RunService {
 
     @Transactional
     public ResponseStartRunDto startRun(Member contextMember, List<Long> petList) {
+        if(petList == null || petList.isEmpty()) {
+            throw new CustomException(RUN_REQUIRE_PET);
+        }
+
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
         List<Pet> pets = member.getPets();
 
