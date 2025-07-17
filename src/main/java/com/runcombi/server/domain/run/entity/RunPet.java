@@ -26,4 +26,7 @@ public class RunPet {
 
     private Integer petCal; // 펫 소모 칼로리
 
+    public void updateCal(Integer petCal) {
+        this.petCal = petCal;
+    }
 }

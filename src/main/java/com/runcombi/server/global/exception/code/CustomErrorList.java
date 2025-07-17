@@ -21,11 +21,13 @@ public enum CustomErrorList implements CustomErrorCode{
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER0001", "사용자가 존재하지 않습니다."),
 
     // Pet
-    PET_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "PET0001", "최대 펫 수를 초과하였습니다."),
+    PET_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "PET0001", "최대 반려 동물 수를 초과하였습니다."),
     PET_NOT_MATCH(HttpStatus.BAD_REQUEST, "PET0002", "회원님의 반려 동물이 아닙니다."),
 
     // Run
-    RUN_REQUIRE_PET(HttpStatus.BAD_REQUEST, "RUN0001", "반려 동물 정보가 비었습니다."),
+    RUN_REQUIRE_PET(HttpStatus.BAD_REQUEST, "RUN0001", "반려 동물이 선택되지 않았습니다."),
+    RUN_MEMBER_STYLE_NULL(HttpStatus.BAD_REQUEST, "RUN0002", "회원의 운동 스타일이 선택되지 않았습니다."),
+    RUN_ID_INVALID(HttpStatus.BAD_REQUEST, "RUN0003", "유효하지 않은 산책 번호입니다."),
 
     // S3 이미지 업로드 에러
     S3_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0001", "이미지 업로드에 실패했습니다."),
