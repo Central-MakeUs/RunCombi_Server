@@ -3,6 +3,7 @@ package com.runcombi.server.domain.run.entity;
 import com.runcombi.server.domain.base.BaseTimeEntity;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.pet.entity.RunStyle;
+import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +40,7 @@ public class Run  extends BaseTimeEntity {
     private Double runDistance; // km 기준
 
     @Enumerated(EnumType.STRING)
-    private RunEvaluating runEvaluating;
+    private RunEvaluating runEvaluating; // 달리기 평가 (SO_EASY, EASY, NORMAL, HARD, VERY_HARD)
 
     private String runImageUrl;
 
@@ -51,5 +52,18 @@ public class Run  extends BaseTimeEntity {
     public void setRunPets(RunPet runPet) {
         this.runPets.add(runPet);
         runPet.setRun(this);
+    }
+
+    public void updateRun(Integer memberCal, Integer runTime, Double runDistance, RunEvaluating runEvaluating, String memo) {
+        this.memberCal = memberCal;
+        this.runTime = runTime;
+        this.runDistance = runDistance;
+        this.runEvaluating = runEvaluating;
+        this.memo = memo;
+    }
+
+    public void setRunImage(S3ImageReturnDto s3ImageReturnDto) {
+        this.runImageUrl = s3ImageReturnDto.getImageUrl();
+        this.runImageKey = s3ImageReturnDto.getImageKey();
     }
 }
