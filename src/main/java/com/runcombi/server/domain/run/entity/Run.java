@@ -46,6 +46,10 @@ public class Run  extends BaseTimeEntity {
 
     private String runImageKey;
 
+    private String routeImageUrl;
+
+    private String routeImageKey;
+
     @Column(columnDefinition = "TEXT")
     private String memo; // 메모
 
@@ -62,8 +66,13 @@ public class Run  extends BaseTimeEntity {
         this.memo = memo;
     }
 
-    public void setRunImage(S3ImageReturnDto s3ImageReturnDto) {
-        this.runImageUrl = s3ImageReturnDto.getImageUrl();
-        this.runImageKey = s3ImageReturnDto.getImageKey();
+    public void setRunImage(S3ImageReturnDto runImageReturnDto) {
+        this.runImageUrl = runImageReturnDto.getImageUrl();
+        this.runImageKey = runImageReturnDto.getImageKey();
+    }
+
+    public void setRouteImage(S3ImageReturnDto routeImageReturnDto) {
+        this.routeImageUrl = routeImageReturnDto.getImageUrl();
+        this.routeImageKey = routeImageReturnDto.getImageKey();
     }
 }

@@ -32,9 +32,10 @@ public class RunController {
             @AuthenticationPrincipal Member member,
             @RequestPart(value = "memberRunData") RequestEndMemberRunDto memberRunData,
             @RequestPart(value = "petRunData") RequestEndPetRunDto petRunDataList,
+            @RequestPart MultipartFile routeImage,
             @RequestPart(required = false) MultipartFile runImage
     ) {
-        runService.endRun(member, memberRunData, petRunDataList, runImage);
+        runService.endRun(member, memberRunData, petRunDataList, routeImage, runImage);
 
         return ApiResponse.onSuccess("산책 정보 업데이트에 성공했습니다.");
     }

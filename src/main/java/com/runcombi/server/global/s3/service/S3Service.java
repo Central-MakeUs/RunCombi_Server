@@ -74,6 +74,22 @@ public class S3Service {
         }
     }
 
+    public S3ImageReturnDto uploadRouteImage(MultipartFile file, Long runId) {
+        String uuid = UUID.randomUUID().toString();
+        String imageName = "route/" + runId + uuid;
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, imageName, file.getInputStream(), getObjectMetaData(file));
+            s3Client.putObject(putObjectRequest);
+            return S3ImageReturnDto
+                    .builder()
+                    .imageUrl(defaultUrl + imageName)
+                    .imageKey(imageName)
+                    .build();
+        }catch(IOException e) {
+            throw new CustomException(S3_IMAGE_UPLOAD_ERROR);
+        }
+    }
+
     public void deleteImage(String key) {
         try {
             if(s3Client.doesObjectExist(bucketName, key)) s3Client.deleteObject(bucketName, key);
