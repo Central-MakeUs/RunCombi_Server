@@ -126,6 +126,8 @@ public class MemberService {
 
         // 첫번째 펫 정보 저장
         Pet firstPet = petService.setPetDetail(member, petDetail);
+        petRepository.save(firstPet);
+
         if(petImage != null) {
             // 첫번째 펫 이미지 저장
             S3ImageReturnDto firstPetImageReturnDto = s3Service.uploadPetImage(petImage, firstPet.getPetId());
