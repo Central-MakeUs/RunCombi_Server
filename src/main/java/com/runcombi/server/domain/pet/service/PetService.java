@@ -3,6 +3,7 @@ package com.runcombi.server.domain.pet.service;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.pet.dto.SetPetDetailDto;
+import com.runcombi.server.domain.pet.dto.UpdatePetDetailDto;
 import com.runcombi.server.domain.pet.entity.Pet;
 import com.runcombi.server.domain.pet.repository.PetRepository;
 import com.runcombi.server.global.exception.CustomException;
@@ -53,7 +54,7 @@ public class PetService {
     }
 
     @Transactional
-    public void deletePet(Pet pet, Member member) {
+    public void deletePetByMember(Pet pet, Member member) {
         // 펫 이미지와 펫 정보를 삭제
         if(pet.getPetImageKey() != null) {
             s3Service.deleteImage(pet.getPetImageKey());
@@ -71,5 +72,48 @@ public class PetService {
             S3ImageReturnDto petImageReturnDto = s3Service.uploadPetImage(petImage, pet.getPetId());
             setPetImage(pet, petImageReturnDto);
         };
+    }
+
+    @Transactional
+    public void updatePetDetail(Member contextMember, UpdatePetDetailDto updatePetDetail, MultipartFile petImage) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Pet pet = petRepository.findByPetId(updatePetDetail.getPetId());
+
+        // petId 에 해당하는 반려 동물이 존재하지 않는 경우 예외 처리
+        if(pet == null) throw new CustomException(PET_ID_INVALID);
+        // 회원의 반려 동물이 아닌경우 예외 처리
+        if(member != pet.getMember()) throw new CustomException(PET_NOT_MATCH);
+
+        pet.updatePetDetail(updatePetDetail);
+
+        if(petImage != null) {
+            if(pet.getPetImageKey() != null) {
+                s3Service.deleteImage(pet.getPetImageKey());
+            }
+            S3ImageReturnDto petImageReturnDto = s3Service.uploadPetImage(petImage, pet.getPetId());
+            pet.setPetImage(petImageReturnDto);
+        }
+
+        petRepository.save(pet);
+    }
+
+    @Transactional
+    public void deletePet(Member contextMember, Long deletePetId) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Pet pet = petRepository.findByPetId(deletePetId);
+
+        // 펫 수가 1마리 이하일 경우 예외 처리
+        List<Pet> pets = member.getPets();
+        if(pets.size() <= 1) throw new CustomException(PET_COUNT_MINIMUM);
+        // petId 에 해당하는 반려 동물이 존재하지 않는 경우 예외 처리
+        if(pet == null) throw new CustomException(PET_ID_INVALID);
+        // 회원의 반려 동물이 아닌경우 예외 처리
+        if(member != pet.getMember()) throw new CustomException(PET_NOT_MATCH);
+
+        if(pet.getPetImageKey() != null) {
+            s3Service.deleteImage(pet.getPetImageKey());
+        }
+
+        deletePetByMember(pet, member);
     }
 }

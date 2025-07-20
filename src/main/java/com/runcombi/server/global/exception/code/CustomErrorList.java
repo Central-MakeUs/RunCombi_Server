@@ -23,6 +23,8 @@ public enum CustomErrorList implements CustomErrorCode{
     // Pet
     PET_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "PET0001", "최대 반려 동물 수를 초과하였습니다."),
     PET_NOT_MATCH(HttpStatus.BAD_REQUEST, "PET0002", "회원님의 반려 동물이 아닙니다."),
+    PET_ID_INVALID(HttpStatus.BAD_REQUEST, "PET0003", "유효하지 않은 반려 동물입니다."),
+    PET_COUNT_MINIMUM(HttpStatus.BAD_REQUEST, "PET0004", "최소 반려 동물 수는 1마리 입니다."),
 
     // Run
     RUN_REQUIRE_PET(HttpStatus.BAD_REQUEST, "RUN0001", "반려 동물이 선택되지 않았습니다."),
