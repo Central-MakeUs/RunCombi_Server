@@ -7,4 +7,6 @@ import lombok.Getter;
 @Builder
 public class ResponseStartRunDto {
     private Long runId;
+    private String isFirstRun;
+    private int nthRun;
 }

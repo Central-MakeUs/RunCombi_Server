@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -60,6 +62,24 @@ public class RunService {
             }
         }
 
+        // 최초 산책인지 표기
+        String isFirstRun = "N";
+        List<Run> runList = runRepository.findByMember(member);
+        if(runList == null) {
+            isFirstRun = "Y";
+        }
+
+        // 이번 달 몇번째 산책인지 표기
+        int nthRun = 1;
+        LocalDate now = LocalDate.now();
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate firstDayNextMonth = firstDayOfMonth.plusMonths(1);
+        LocalDateTime startOfMonth = firstDayOfMonth.atStartOfDay();
+        LocalDateTime startOfNextMonth = firstDayNextMonth.atStartOfDay();
+        int count = runRepository.countByMemberAndMonth(member, startOfMonth, startOfNextMonth);
+        nthRun = count + 1;
+
+
         // Run 생성 후 저장
         Run run = runRepository.save(Run.builder()
                 .member(member)
@@ -77,7 +97,11 @@ public class RunService {
             }
         }
 
-        return ResponseStartRunDto.builder().runId(run.getRunId()).build();
+        return ResponseStartRunDto.builder()
+                .runId(run.getRunId())
+                .isFirstRun(isFirstRun)
+                .nthRun(nthRun)
+                .build();
     }
 
     @Transactional
