@@ -59,4 +59,15 @@ public class MemberController {
 
         return ApiResponse.onSuccess("약관 동의 저장에 성공하였습니다.");
     }
+
+    @PostMapping("/member/updateMemberDetail")
+    public ApiResponse<String> updateMemberDetail(
+            @AuthenticationPrincipal Member member,
+            @RequestPart(value = "updateMemberDetail") SetMemberDetailDto updateMemberDto,
+            @RequestPart(required = false) MultipartFile memberImage
+    ) {
+        memberService.updateMemberDetail(member, updateMemberDto, memberImage);
+
+        return ApiResponse.onSuccess("정보 수정에 성공하였습니다.");
+    }
 }

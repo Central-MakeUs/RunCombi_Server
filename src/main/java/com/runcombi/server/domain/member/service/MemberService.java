@@ -143,7 +143,7 @@ public class MemberService {
         List<Pet> pets = petRepository.findAllByMember(member);
         if(!pets.isEmpty()) {
             for(Pet pet : pets) {
-                petService.deletePet(pet, member);
+                petService.deletePetByMember(pet, member);
             }
         }
     }
@@ -192,5 +192,20 @@ public class MemberService {
             returnTermList.add(term.getTermType());
         }
         return returnTermList;
+    }
+
+    @Transactional
+    public void updateMemberDetail(Member member, SetMemberDetailDto updateMemberDto, MultipartFile memberImage) {
+        member.setMemberDetail(updateMemberDto);
+
+        if(memberImage != null) {
+            if(member.getProfileImgKey() != null) {
+                s3Service.deleteImage(member.getProfileImgKey());
+            }
+            S3ImageReturnDto memberImageReturnDto = s3Service.uploadMemberImage(memberImage, member.getMemberId());
+            member.setMemberImage(memberImageReturnDto);
+        }
+
+        memberRepository.save(member);
     }
 }
