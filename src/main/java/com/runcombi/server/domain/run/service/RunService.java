@@ -95,8 +95,10 @@ public class RunService {
                 .map(RunPet::getPet)
                 .map(Pet::getPetId)
                 .collect(Collectors.toSet());
+        System.out.println(petIdSet.size());
         List<PetCalDto> petCalList = petRunDataList.getPetCalList();
         List<Long> requestPetId = new ArrayList<>();
+        System.out.println(requestPetId);
         for(PetCalDto petCalDto : petCalList) {
             requestPetId.add(petCalDto.getPetId());
         }
