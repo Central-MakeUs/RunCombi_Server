@@ -126,6 +126,8 @@ public class MemberService {
 
         // 첫번째 펫 정보 저장
         Pet firstPet = petService.setPetDetail(member, petDetail);
+        petRepository.save(firstPet);
+
         if(petImage != null) {
             // 첫번째 펫 이미지 저장
             S3ImageReturnDto firstPetImageReturnDto = s3Service.uploadPetImage(petImage, firstPet.getPetId());
@@ -141,7 +143,7 @@ public class MemberService {
         List<Pet> pets = petRepository.findAllByMember(member);
         if(!pets.isEmpty()) {
             for(Pet pet : pets) {
-                petService.deletePet(pet, member);
+                petService.deletePetByMember(pet, member);
             }
         }
     }
@@ -190,5 +192,20 @@ public class MemberService {
             returnTermList.add(term.getTermType());
         }
         return returnTermList;
+    }
+
+    @Transactional
+    public void updateMemberDetail(Member member, SetMemberDetailDto updateMemberDto, MultipartFile memberImage) {
+        member.setMemberDetail(updateMemberDto);
+
+        if(memberImage != null) {
+            if(member.getProfileImgKey() != null) {
+                s3Service.deleteImage(member.getProfileImgKey());
+            }
+            S3ImageReturnDto memberImageReturnDto = s3Service.uploadMemberImage(memberImage, member.getMemberId());
+            member.setMemberImage(memberImageReturnDto);
+        }
+
+        memberRepository.save(member);
     }
 }

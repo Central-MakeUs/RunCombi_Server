@@ -81,7 +81,7 @@ public class RunService {
     }
 
     @Transactional
-    public void endRun(Member contextMember, RequestEndMemberRunDto memberRunData, RequestEndPetRunDto petRunDataList, MultipartFile runImage) {
+    public void endRun(Member contextMember, RequestEndMemberRunDto memberRunData, RequestEndPetRunDto petRunDataList, MultipartFile routeImage, MultipartFile runImage) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
 
         // 해당 runId 가 없는 경우 RUN_ID_INVALID 예외 발생
@@ -95,8 +95,10 @@ public class RunService {
                 .map(RunPet::getPet)
                 .map(Pet::getPetId)
                 .collect(Collectors.toSet());
+        System.out.println(petIdSet.size());
         List<PetCalDto> petCalList = petRunDataList.getPetCalList();
         List<Long> requestPetId = new ArrayList<>();
+        System.out.println(requestPetId);
         for(PetCalDto petCalDto : petCalList) {
             requestPetId.add(petCalDto.getPetId());
         }
@@ -107,10 +109,14 @@ public class RunService {
             }
         }
 
+        // 산책 경로 이미지 저장
+        S3ImageReturnDto routeImageReturnDto = s3Service.uploadRouteImage(routeImage, run.getRunId());
+        run.setRouteImage(routeImageReturnDto);
+
         // 이미지 등록
         if(runImage != null) {
-            S3ImageReturnDto s3ImageReturnDto = s3Service.uploadRunImage(runImage, run.getRunId());
-            run.setRunImage(s3ImageReturnDto);
+            S3ImageReturnDto runImageReturnDto = s3Service.uploadRunImage(runImage, run.getRunId());
+            run.setRunImage(runImageReturnDto);
         }
 
         // run 데이터 저장
