@@ -95,8 +95,10 @@ public class KakaoLoginService {
                     .build();
             Member savedMember = memberRepository.save(newMember);
 
-            String accessToken = jwtService.createRefreshToken(savedMember.getMemberId(), savedMember.getRole());
+            String accessToken = jwtService.createAccessToken(savedMember.getMemberId(), savedMember.getRole());
             String refreshToken = jwtService.createRefreshToken(savedMember.getMemberId(), savedMember.getRole());
+            System.out.println(accessToken);
+            System.out.println(refreshToken);
 
             savedMember.updateRefreshToken(refreshToken);
 
@@ -111,7 +113,7 @@ public class KakaoLoginService {
             Member member = optionalMember.get();
             MemberStatus memberStatus = member.getIsActive();
 
-            String accessToken = jwtService.createRefreshToken(member.getMemberId(), member.getRole());
+            String accessToken = jwtService.createAccessToken(member.getMemberId(), member.getRole());
             String refreshToken = jwtService.createRefreshToken(member.getMemberId(), member.getRole());
 
             // 추가 정보 기입이 필요한 회원일때 응답 (Member 의 isActive 값이 PENDING_AGREE 또는 PENDING_MEMBER_DETAIL 일 경우 응답에 isRegistered("N") 을 담아 리턴
