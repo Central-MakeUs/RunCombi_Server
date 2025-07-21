@@ -15,4 +15,10 @@ public interface RunRepository extends JpaRepository<Run, Long> {
     // member와 이번 달 기록 수 조회
     @Query("SELECT COUNT(r) FROM Run r WHERE r.member = :member AND r.regDate >= :startDate AND r.regDate < :endDate")
     int countByMemberAndMonth(@Param("member") Member member, @Param("startDate") LocalDateTime start, @Param("endDate") LocalDateTime end);
+
+    // 특정 달의 runId 와 regDate 를 리스트로 반환
+    @Query("SELECT r.runId, r.regDate FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    List<Object[]> findRunIdsAndDates(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    void deleteByMember(Member member);
 }
