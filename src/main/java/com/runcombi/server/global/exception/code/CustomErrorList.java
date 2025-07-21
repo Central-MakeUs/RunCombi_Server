@@ -31,6 +31,9 @@ public enum CustomErrorList implements CustomErrorCode{
     RUN_MEMBER_STYLE_NULL(HttpStatus.BAD_REQUEST, "RUN0002", "회원의 운동 스타일이 선택되지 않았습니다."),
     RUN_ID_INVALID(HttpStatus.BAD_REQUEST, "RUN0003", "유효하지 않은 산책 번호입니다."),
 
+    // Calender
+    CALENDER_MONTH_ERROR(HttpStatus.BAD_REQUEST, "CALENDER0001", "유효하지 않은 month 입니다."),
+
     // S3 이미지 업로드 에러
     S3_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0001", "이미지 업로드에 실패했습니다."),
     S3_IMAGE_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0002", "기존 이미지 삭제에 실패했습니다."),
