@@ -27,7 +27,7 @@ public class JwtService {
     private final UserDetailServiceImpl userDetailService;
 
     private Long accessTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 7일
-    private Long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 30일
+    private Long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 30; // 30일
 
     public String validateToken(String token) {
         Date now = new Date();

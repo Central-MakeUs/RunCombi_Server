@@ -14,6 +14,8 @@ import com.runcombi.server.domain.pet.dto.SetPetDetailDto;
 import com.runcombi.server.domain.pet.entity.Pet;
 import com.runcombi.server.domain.pet.repository.PetRepository;
 import com.runcombi.server.domain.pet.service.PetService;
+import com.runcombi.server.domain.run.entity.Run;
+import com.runcombi.server.domain.run.repository.RunRepository;
 import com.runcombi.server.global.exception.CustomException;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import com.runcombi.server.global.s3.service.S3Service;
@@ -39,6 +41,7 @@ public class MemberService {
     private final PetService petService;
     private final PetRepository petRepository;
     private final S3Service s3Service;
+    private final RunRepository runRepository;
     @Transactional
     public void setMemberTerms(List<TermType> agreeTermsList, Member contextMember) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
@@ -207,5 +210,28 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteAccount(Member contextMember) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+
+        // 산책 이미지 삭제
+        List<Run> runList = runRepository.findByMember(member);
+        for(Run run : runList) {
+            if(run.getRouteImageKey() != null) s3Service.deleteImage(run.getRouteImageKey());
+        }
+
+        // 반려 동물 이미지 삭제
+        List<Pet> petList = petRepository.findAllByMember(member);
+        for(Pet pet : petList) {
+            if(pet.getPetImageKey() != null) s3Service.deleteImage(pet.getPetImageKey());
+        }
+
+        // 회원 이미지 삭제
+        if(member.getProfileImgKey() != null) s3Service.deleteImage(member.getProfileImgKey());
+
+        runRepository.deleteByMember(member);
+        memberRepository.delete(member);
     }
 }
