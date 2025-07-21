@@ -70,4 +70,13 @@ public class MemberController {
 
         return ApiResponse.onSuccess("정보 수정에 성공하였습니다.");
     }
+
+    @PostMapping("/member/deleteAccount")
+    public ApiResponse<String> deleteAccount(
+            @AuthenticationPrincipal Member member
+    ) {
+        memberService.deleteAccount(member);
+
+        return ApiResponse.onSuccess("회원 탈퇴에 성공하였습니다.");
+    }
 }
