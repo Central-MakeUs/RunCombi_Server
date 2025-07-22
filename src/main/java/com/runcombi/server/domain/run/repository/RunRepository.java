@@ -21,4 +21,23 @@ public interface RunRepository extends JpaRepository<Run, Long> {
     List<Object[]> findRunIdsAndDates(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     void deleteByMember(Member member);
+
+    // 한 달 소모 칼로리 평균을 반환 (소수점 버림)
+    @Query("SELECT FLOOR(AVG(r.memberCal)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Integer findAverageMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    // 한 달 평균 산책 거리 반환 (소수점 2번째 자리까지)
+    @Query("SELECT ROUND(AVG(r.runDistance), 2) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Double findAverageRunDistance(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    // 한 달 가장 많은 산책 스타일
+    @Query(value = "SELECT member_run_style, COUNT(*) AS cnt FROM run " +
+            "WHERE member_id = :memberId AND reg_date >= :start AND reg_date < :end AND member_run_style IS NOT NULL " +
+            "GROUP BY member_run_style " +
+            "ORDER BY cnt DESC, " +
+            "CASE member_run_style WHEN 'RUNNING' THEN 1 WHEN 'WALKING' THEN 2 WHEN 'SLOW_WALKING' THEN 3 END",
+            nativeQuery = true)
+    List<Object[]> findRunStyleCounts(@Param("memberId") Long memberId,
+                                      @Param("start") LocalDateTime start,
+                                      @Param("end") LocalDateTime end);
 }
