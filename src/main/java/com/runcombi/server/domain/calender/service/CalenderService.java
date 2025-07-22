@@ -1,5 +1,7 @@
 package com.runcombi.server.domain.calender.service;
 
+import com.runcombi.server.domain.calender.dto.MonthRunDto;
+import com.runcombi.server.domain.calender.dto.ResponseMonthRunDto;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.run.repository.RunRepository;
@@ -22,7 +24,7 @@ public class CalenderService {
     private final RunRepository runRepository;
     private final MemberRepository memberRepository;
 
-    public List<Map<String, List<Long>>> getMonthData(Member contextMember, int year, int month) {
+    public ResponseMonthRunDto getMonthData(Member contextMember, int year, int month) {
         if(month > 12 || month < 1) throw new CustomException(CALENDER_MONTH_ERROR);
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
 
@@ -53,21 +55,38 @@ public class CalenderService {
             }
         }
 
-        // 배열로 날자 데이터에 해당하는 runId 를 담아 반환
-        List<Map<String, List<Long>>> resultList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+        // 배열로 날자값과 runId 를 담아 반환
+        List<MonthRunDto> resultList = new ArrayList<>();
         for (LocalDate date : dateMap.keySet()) {
             String key = date.format(formatter); // "yyyyMMdd"
             List<Long> runIds = dateMap.get(date);
+
+            // runIds가 비어있으면 null 유지
             if (runIds.isEmpty()) {
-                runIds = null; // run 데이터가 없다면 null 처리
+                runIds = null;
             }
-            Map<String, List<Long>> dayEntry = new HashMap<>();
-            dayEntry.put(key, runIds);
-            resultList.add(dayEntry);
+            resultList.add(new MonthRunDto(key, runIds));
         }
 
-        return resultList;
+        // 한 달 평균 소모 칼로리 계산 ( null / 정수 )
+        Integer avgCal = runRepository.findAverageMemberCal(member, startOfMonth, endOfMonth);
+        System.out.println("avgCal >>> " + avgCal);
+
+        // 한 달 평균 산책 거리 계산 ( null / 소수점 2자리 )
+        Double avgDistance = runRepository.findAverageRunDistance(member, startOfMonth, endOfMonth);
+        System.out.println("avgDistance >>> " + avgDistance);
+
+        // 한 달 내 가장 많은 산책 스타일 계산
+        String topRunStyle = null;
+        List<Object[]> runStyleCounts = runRepository.findRunStyleCounts(member.getMemberId(), startOfMonth, endOfMonth);
+        if(!runStyleCounts.isEmpty()) {
+            Object[] first = runStyleCounts.getFirst();
+            topRunStyle = (String) first[0];
+            System.out.println("topRunStyle >>> " + topRunStyle);
+        }
+
+        return new ResponseMonthRunDto(resultList, avgCal, avgDistance, topRunStyle);
     }
 }
