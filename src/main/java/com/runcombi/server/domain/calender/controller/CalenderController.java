@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.calender.controller;
 
 import com.runcombi.server.domain.calender.dto.DateDto;
+import com.runcombi.server.domain.calender.dto.MonthRunDto;
 import com.runcombi.server.domain.calender.service.CalenderService;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.global.response.ApiResponse;
@@ -26,7 +27,7 @@ public class CalenderController {
             @AuthenticationPrincipal Member member,
             @RequestBody DateDto dateDto
     ) {
-        List<Map<String, List<Long>>> monthData = calenderService.getMonthData(member, dateDto.getYear(), dateDto.getMonth());
+        List<MonthRunDto> monthData = calenderService.getMonthData(member, dateDto.getYear(), dateDto.getMonth());
         return ApiResponse.onSuccess(monthData);
     }
 }
