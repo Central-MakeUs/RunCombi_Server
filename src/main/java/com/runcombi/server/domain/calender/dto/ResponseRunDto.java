@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.calender.dto;
 
+import com.runcombi.server.domain.pet.entity.RunStyle;
 import com.runcombi.server.domain.run.entity.RunEvaluating;
 import lombok.*;
 
@@ -14,6 +15,7 @@ public class ResponseRunDto {
     private Long runId;
     private Integer runTime; // minute 기준
     private Double runDistance; // km 기준
+    private RunStyle memberRunStyle; // 사용자 산책 스타일
     private RunEvaluating runEvaluating; // 달리기 평가 (SO_EASY, EASY, NORMAL, HARD, VERY_HARD)
     private String runImageUrl; // 산책 이미지
     private String routeImageUrl; // 산책 경로 이미지

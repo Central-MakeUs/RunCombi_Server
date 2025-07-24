@@ -147,6 +147,7 @@ public class CalenderService {
                 .runId(run.getRunId())
                 .runTime(run.getRunTime())
                 .runDistance(run.getRunDistance())
+                .memberRunStyle(run.getMemberRunStyle())
                 .runEvaluating(run.getRunEvaluating())
                 .runImageUrl(run.getRouteImageUrl())
                 .routeImageUrl(run.getRouteImageUrl())
