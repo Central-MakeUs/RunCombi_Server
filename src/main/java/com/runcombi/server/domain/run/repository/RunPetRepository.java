@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface RunPetRepository extends JpaRepository<RunPet, Long> {
     Optional<RunPet> findByRunAndPet(Run run, Pet pet);
+
 }

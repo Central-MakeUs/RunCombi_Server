@@ -75,4 +75,8 @@ public class Run  extends BaseTimeEntity {
         this.routeImageUrl = routeImageReturnDto.getImageUrl();
         this.routeImageKey = routeImageReturnDto.getImageKey();
     }
+
+    public void updateRunEvaluating(RunEvaluating runEvaluating) {
+        this.runEvaluating = runEvaluating;
+    }
 }
