@@ -40,4 +40,7 @@ public interface RunRepository extends JpaRepository<Run, Long> {
     List<Object[]> findRunStyleCounts(@Param("memberId") Long memberId,
                                       @Param("start") LocalDateTime start,
                                       @Param("end") LocalDateTime end);
+
+    // 일자로 산책 데이터를 가져오기
+    List<Run> findByMemberAndRegDateBetween(Member member, LocalDateTime start, LocalDateTime end);
 }

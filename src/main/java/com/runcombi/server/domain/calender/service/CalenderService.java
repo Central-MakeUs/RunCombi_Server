@@ -1,14 +1,19 @@
 package com.runcombi.server.domain.calender.service;
 
-import com.runcombi.server.domain.calender.dto.MonthRunDto;
-import com.runcombi.server.domain.calender.dto.ResponseMonthRunDto;
+import com.runcombi.server.domain.calender.dto.*;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.repository.MemberRepository;
+import com.runcombi.server.domain.pet.entity.Pet;
+import com.runcombi.server.domain.pet.repository.PetRepository;
+import com.runcombi.server.domain.run.entity.Run;
+import com.runcombi.server.domain.run.entity.RunEvaluating;
+import com.runcombi.server.domain.run.entity.RunPet;
 import com.runcombi.server.domain.run.repository.RunRepository;
 import com.runcombi.server.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +28,7 @@ import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 public class CalenderService {
     private final RunRepository runRepository;
     private final MemberRepository memberRepository;
+    private final PetRepository petRepository;
 
     public ResponseMonthRunDto getMonthData(Member contextMember, int year, int month) {
         if(month > 12 || month < 1) throw new CustomException(CALENDER_MONTH_ERROR);
@@ -58,7 +64,7 @@ public class CalenderService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         // 배열로 날자값과 runId 를 담아 반환
-        List<MonthRunDto> resultList = new ArrayList<>();
+        List<RequestMonthRunDto> resultList = new ArrayList<>();
         for (LocalDate date : dateMap.keySet()) {
             String key = date.format(formatter); // "yyyyMMdd"
             List<Long> runIds = dateMap.get(date);
@@ -67,7 +73,7 @@ public class CalenderService {
             if (runIds.isEmpty()) {
                 runIds = null;
             }
-            resultList.add(new MonthRunDto(key, runIds));
+            resultList.add(new RequestMonthRunDto(key, runIds));
         }
 
         // 한 달 평균 소모 칼로리 계산 ( null / 정수 )
@@ -88,5 +94,77 @@ public class CalenderService {
         }
 
         return new ResponseMonthRunDto(resultList, avgCal, avgDistance, topRunStyle);
+    }
+
+    public List<ResponseDayRunDto> getDayData(Member member, int year, int month, int day) {
+        if(month > 12 || month < 1) throw new CustomException(CALENDER_MONTH_ERROR);
+
+        // 기간 계산
+        LocalDate startDay = LocalDate.of(year, month, day);
+        LocalDate endDay = LocalDate.of(year, month, day);
+
+        LocalDateTime start = startDay.atStartOfDay();
+        LocalDateTime end = endDay.plusDays(1).atStartOfDay();
+
+        List<Run> runs = runRepository.findByMemberAndRegDateBetween(member, start, end);
+
+        List<ResponseDayRunDto> runList = new ArrayList<>();
+        for(Run run : runs) {
+            runList.add(ResponseDayRunDto.builder()
+                            .runId(run.getRunId())
+                            .runTime(run.getRunTime())
+                            .runDistance(run.getRunDistance())
+                            .runImageUrl(run.getRunImageUrl())
+                            .regDate(run.getRegDate())
+                            .build());
+        }
+
+        return runList;
+    }
+
+    public ResponseRunDto getRunData(Member contextMember, Long runId) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        List<ResponseRunPetDto> responseRunPetDtoList = new ArrayList<>();
+        List<RunPet> runPets = run.getRunPets();
+        for(RunPet runpet : runPets) {
+            Pet pet = petRepository.findByPetId(runpet.getPet().getPetId());
+            responseRunPetDtoList.add(
+                    ResponseRunPetDto.builder()
+                            .petId(pet.getPetId())
+                            .name(pet.getName())
+                            .petImageUrl(pet.getPetImageUrl())
+                            .petCal(runpet.getPetCal())
+                            .build()
+            );
+        }
+
+        return ResponseRunDto.builder()
+                .runId(run.getRunId())
+                .runTime(run.getRunTime())
+                .runDistance(run.getRunDistance())
+                .runEvaluating(run.getRunEvaluating())
+                .runImageUrl(run.getRouteImageUrl())
+                .routeImageUrl(run.getRouteImageUrl())
+                .memo(run.getMemo())
+                .regDate(run.getRegDate())
+                .petData(responseRunPetDtoList)
+                .build();
+    }
+
+    @Transactional
+    public void setRunEvaluating(Member contextMember, Long runId, RunEvaluating runEvaluating) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        run.updateRunEvaluating(runEvaluating);
+        runRepository.save(run);
     }
 }

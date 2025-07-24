@@ -30,6 +30,7 @@ public enum CustomErrorList implements CustomErrorCode{
     RUN_REQUIRE_PET(HttpStatus.BAD_REQUEST, "RUN0001", "반려 동물이 선택되지 않았습니다."),
     RUN_MEMBER_STYLE_NULL(HttpStatus.BAD_REQUEST, "RUN0002", "회원의 운동 스타일이 선택되지 않았습니다."),
     RUN_ID_INVALID(HttpStatus.BAD_REQUEST, "RUN0003", "유효하지 않은 산책 번호입니다."),
+    RUN_MEMBER_NOT_MATCH(HttpStatus.BAD_REQUEST, "RUN0004", "회원의 산책 정보가 아닙니다."),
 
     // Calender
     CALENDER_MONTH_ERROR(HttpStatus.BAD_REQUEST, "CALENDER0001", "유효하지 않은 month 입니다."),
