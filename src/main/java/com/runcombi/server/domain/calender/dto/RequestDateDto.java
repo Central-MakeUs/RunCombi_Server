@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DateDto {
+public class RequestDateDto {
     private int year;
     private int month;
+    private int day;
 }
