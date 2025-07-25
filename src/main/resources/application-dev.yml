@@ -16,6 +16,10 @@ spring:
     secret-key: ${S3_SECRET_KEY}
     region: ${S3_REGION}
     bucket-name: ${S3_BUCKET_NAME}
+  servlet:
+    multipart:
+      max-file-size: 5MB       # 개별 파일 크기 제한
+      max-request-size: 20MB    # 전체 요청 크기 제한
 
 logging:
   level:
