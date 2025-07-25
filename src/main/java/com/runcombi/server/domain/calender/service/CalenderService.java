@@ -10,10 +10,13 @@ import com.runcombi.server.domain.run.entity.RunEvaluating;
 import com.runcombi.server.domain.run.entity.RunPet;
 import com.runcombi.server.domain.run.repository.RunRepository;
 import com.runcombi.server.global.exception.CustomException;
+import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
+import com.runcombi.server.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +32,7 @@ public class CalenderService {
     private final RunRepository runRepository;
     private final MemberRepository memberRepository;
     private final PetRepository petRepository;
+    private final S3Service s3Service;
 
     public ResponseMonthRunDto getMonthData(Member contextMember, int year, int month) {
         if(month > 12 || month < 1) throw new CustomException(CALENDER_MONTH_ERROR);
@@ -167,5 +171,51 @@ public class CalenderService {
 
         run.updateRunEvaluating(runEvaluating);
         runRepository.save(run);
+    }
+
+    @Transactional
+    public void setRunImage(Member contextMember, Long runId, MultipartFile runImage) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 이미지 확장자 검증
+        if(!runImage.isEmpty()) s3Service.validateImageFile(runImage);
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        // 이미지가 있으면 삭제
+        if(!run.getRunImageKey().isEmpty()) {
+            s3Service.deleteImage(run.getRunImageKey());
+        }
+
+        // 이미지 저장
+        S3ImageReturnDto s3ImageReturnDto = s3Service.uploadRunImage(runImage, run.getRunId());
+        run.setRunImage(s3ImageReturnDto);
+
+        runRepository.save(run);
+    }
+
+    @Transactional
+    public void updateMemo(Member contextMember, Long runId, String memo) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        run.updateMemo(memo);
+        runRepository.save(run);
+    }
+
+    @Transactional
+    public void deleteRun(Member contextMember, Long runId) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        runRepository.delete(run);
     }
 }

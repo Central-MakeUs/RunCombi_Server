@@ -79,4 +79,8 @@ public class Run  extends BaseTimeEntity {
     public void updateRunEvaluating(RunEvaluating runEvaluating) {
         this.runEvaluating = runEvaluating;
     }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
 }

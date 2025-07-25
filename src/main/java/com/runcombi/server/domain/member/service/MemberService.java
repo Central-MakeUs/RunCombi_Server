@@ -119,6 +119,10 @@ public class MemberService {
         memberDetailNullCheck(memberDetail);
         petService.petDetailNullCheck(petDetail);
 
+        // 이미지 파일 확장자 검증
+        if(!memberImage.isEmpty()) s3Service.validateImageFile(memberImage);
+        if(!petImage.isEmpty()) s3Service.validateImageFile(petImage);
+
         // 회원 정보 저장
         setMemberDetail(member, memberDetail);
         if(memberImage != null) {
@@ -199,6 +203,9 @@ public class MemberService {
 
     @Transactional
     public void updateMemberDetail(Member member, SetMemberDetailDto updateMemberDto, MultipartFile memberImage) {
+        // 파일 확장자 검증
+        if(!memberImage.isEmpty()) s3Service.validateImageFile(memberImage);
+
         member.setMemberDetail(updateMemberDto);
 
         if(memberImage != null) {

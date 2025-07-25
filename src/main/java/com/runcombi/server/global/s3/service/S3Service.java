@@ -103,4 +103,21 @@ public class S3Service {
         objectMetadata.setContentLength(file.getSize());
         return objectMetadata;
     }
+
+    /**
+     * @param file
+     * image 파일이 아니라면 예외(FILE_NOT_IMAGE)
+     */
+    public void validateImageFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+
+        String lower = fileName.toLowerCase();
+        if(lower.endsWith(".jpg") || lower.endsWith(".jpeg") ||
+            lower.endsWith(".png") || lower.endsWith(".gif") ||
+            lower.endsWith(".bmp") || lower.endsWith(".webp")) {
+            return;
+        }else {
+            throw new CustomException(FILE_NOT_IMAGE);
+        }
+    }
 }
