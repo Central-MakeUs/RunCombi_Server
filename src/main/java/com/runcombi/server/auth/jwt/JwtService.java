@@ -110,4 +110,21 @@ public class JwtService {
                 .signWith(key)
                 .compact();
     }
+
+    // 토큰 유효성 + 만료일자 확인
+    public Boolean validateTokenBoolean(String token) {
+        Date now = new Date();
+
+        try {
+            String base64EncodedSecretKey = encodeBase64(SECRET_KEY);
+            Key key = getKeyByBase64(base64EncodedSecretKey);
+
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(token);
+            return !claims.getBody().getExpiration().before(new Date(now.getTime()));
+        } catch (JwtException e) {
+            return false;
+        }
+    }
 }
