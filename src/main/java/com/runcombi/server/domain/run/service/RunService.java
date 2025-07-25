@@ -112,6 +112,9 @@ public class RunService {
         Run run = runRepository.findById(memberRunData.getRunId()).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
         // runId 와 memberId 가 일치하지 않는 경우 RUN_ID_INVALID 에외 발생
         if(run.getMember() != member) throw new CustomException(RUN_ID_INVALID);
+        // 이미지 확장자 검증
+        if(!runImage.isEmpty()) s3Service.validateImageFile(runImage);
+        if(!routeImage.isEmpty()) s3Service.validateImageFile(routeImage);
 
         // 회원의 Pet 인지 확인
         List<RunPet> runPets = run.getRunPets();

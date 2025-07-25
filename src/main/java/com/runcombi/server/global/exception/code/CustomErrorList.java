@@ -39,6 +39,9 @@ public enum CustomErrorList implements CustomErrorCode{
     S3_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0001", "이미지 업로드에 실패했습니다."),
     S3_IMAGE_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET0002", "기존 이미지 삭제에 실패했습니다."),
 
+    // file
+    FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "FILE0001", "이미지 확장자 파일이 아닙니다."),
+
     // 필수 필드 값이 비어있는 경우 에러
     DEFAULT_FIELD_NULL(HttpStatus.BAD_REQUEST, "FIELD0001", "필수 입력 필드가 비어있습니다.");
 
