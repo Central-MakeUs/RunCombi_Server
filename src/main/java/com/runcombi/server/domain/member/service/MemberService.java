@@ -1,5 +1,7 @@
 package com.runcombi.server.domain.member.service;
 
+import com.runcombi.server.auth.jwt.JwtService;
+import com.runcombi.server.auth.jwt.dto.ResponseTokenDto;
 import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.MemberDto;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
@@ -42,6 +44,7 @@ public class MemberService {
     private final PetRepository petRepository;
     private final S3Service s3Service;
     private final RunRepository runRepository;
+    private final JwtService jwtService;
     @Transactional
     public void setMemberTerms(List<TermType> agreeTermsList, Member contextMember) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
@@ -240,5 +243,22 @@ public class MemberService {
 
         runRepository.deleteByMember(member);
         memberRepository.delete(member);
+    }
+
+    @Transactional
+    public ResponseTokenDto regenerateAccessToken(String refreshToken) {
+        // 토큰 유효성 검사
+        if (!jwtService.validateTokenBoolean(refreshToken)) throw new CustomException(REFRESH_TOKEN_INVALID);
+
+        Member member = memberRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        String newRefreshToken = jwtService.createRefreshToken(member.getMemberId(), member.getRole());
+        String newAccessToken = jwtService.createAccessToken(member.getMemberId(), member.getRole());
+        member.updateRefreshToken(newRefreshToken);
+        memberRepository.save(member);
+
+        return ResponseTokenDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 }
