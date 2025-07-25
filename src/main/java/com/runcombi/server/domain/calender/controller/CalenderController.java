@@ -7,10 +7,8 @@ import com.runcombi.server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -54,5 +52,48 @@ public class CalenderController {
     ) {
         calenderService.setRunEvaluating(member, runEvaluatingDto.getRunId(), runEvaluatingDto.getRunEvaluating());
         return ApiResponse.onSuccess("산책 평가 등록에 성공하였습니다.");
+    }
+
+    @PostMapping("/calender/setRunImage")
+    public ApiResponse<String> setRunImage(
+            @AuthenticationPrincipal Member member,
+            @RequestPart Long runId,
+            @RequestPart MultipartFile runImage
+    ) {
+        calenderService.setRunImage(member, runId, runImage);
+
+        return ApiResponse.onSuccess("산책 이미지 변경에 성공하였습니다.");
+    }
+
+    @PostMapping("/calender/updateMemo")
+    public ApiResponse<String> updateMemo(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestRunMemoDto requestRunMemoDto
+    ) {
+        calenderService.updateMemo(member, requestRunMemoDto.getRunId(), requestRunMemoDto.getMemo());
+
+        return ApiResponse.onSuccess("산책 메모 변경에 성공하였습니다.");
+    }
+
+    /**
+    @PostMapping("/calender/updateRunDetail")
+    public ApiResponse<String> updateRunDetail(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestUpdqtRunDetailDto requestUpdqtRunDetailDto
+    ) {
+        calenderService.updateRunDetail(member, requestUpdqtRunDetailDto);
+
+        return ApiResponse.onSuccess("산책 정보 변경에 성공하였습니다.");
+    }
+    */
+
+    @PostMapping("/calender/deleteRun")
+    public ApiResponse<String> deleteRun(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestRunIdDto requestRunIdDto
+    ) {
+        calenderService.deleteRun(member, requestRunIdDto.getRunId());
+
+        return ApiResponse.onSuccess("삭책 정보 삭제에 성공하였습니다.");
     }
 }
