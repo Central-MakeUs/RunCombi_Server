@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,5 +83,9 @@ public class Run  extends BaseTimeEntity {
 
     public void updateMemo(String memo) {
         this.memo = memo;
+    }
+
+    public void updateRegDate(LocalDateTime localDateTime) {
+        this.setRegDate(localDateTime);
     }
 }
