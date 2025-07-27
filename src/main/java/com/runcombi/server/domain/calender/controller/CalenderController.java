@@ -75,18 +75,6 @@ public class CalenderController {
         return ApiResponse.onSuccess("산책 메모 변경에 성공하였습니다.");
     }
 
-    /**
-    @PostMapping("/calender/updateRunDetail")
-    public ApiResponse<String> updateRunDetail(
-            @AuthenticationPrincipal Member member,
-            @RequestBody RequestUpdqtRunDetailDto requestUpdqtRunDetailDto
-    ) {
-        calenderService.updateRunDetail(member, requestUpdqtRunDetailDto);
-
-        return ApiResponse.onSuccess("산책 정보 변경에 성공하였습니다.");
-    }
-    */
-
     @PostMapping("/calender/deleteRun")
     public ApiResponse<String> deleteRun(
             @AuthenticationPrincipal Member member,
@@ -94,6 +82,28 @@ public class CalenderController {
     ) {
         calenderService.deleteRun(member, requestRunIdDto.getRunId());
 
-        return ApiResponse.onSuccess("삭책 정보 삭제에 성공하였습니다.");
+        return ApiResponse.onSuccess("산책 정보 삭제에 성공하였습니다.");
     }
+
+    @PostMapping("/calender/addRun")
+    public ApiResponse<String> addRun(
+        @AuthenticationPrincipal Member member,
+        @RequestBody RequestAddRunDto addRunData
+    ) {
+        calenderService.addRun(member, addRunData);
+
+        return ApiResponse.onSuccess("산책 정보 생성에 성공하였습니다.");
+    }
+
+    /**
+     @PostMapping("/calender/updateRunDetail")
+     public ApiResponse<String> updateRunDetail(
+     @AuthenticationPrincipal Member member,
+     @RequestBody RequestUpdqtRunDetailDto requestUpdqtRunDetailDto
+     ) {
+     calenderService.updateRunDetail(member, requestUpdqtRunDetailDto);
+
+     return ApiResponse.onSuccess("산책 정보 변경에 성공하였습니다.");
+     }
+     */
 }
