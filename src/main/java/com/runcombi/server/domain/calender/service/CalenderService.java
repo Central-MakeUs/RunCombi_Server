@@ -5,9 +5,11 @@ import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.pet.entity.Pet;
 import com.runcombi.server.domain.pet.repository.PetRepository;
+import com.runcombi.server.domain.run.dto.PetCalDto;
 import com.runcombi.server.domain.run.entity.Run;
 import com.runcombi.server.domain.run.entity.RunEvaluating;
 import com.runcombi.server.domain.run.entity.RunPet;
+import com.runcombi.server.domain.run.repository.RunPetRepository;
 import com.runcombi.server.domain.run.repository.RunRepository;
 import com.runcombi.server.global.exception.CustomException;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 
@@ -32,6 +35,7 @@ public class CalenderService {
     private final RunRepository runRepository;
     private final MemberRepository memberRepository;
     private final PetRepository petRepository;
+    private final RunPetRepository runPetRepository;
     private final S3Service s3Service;
 
     public ResponseMonthRunDto getMonthData(Member contextMember, int year, int month) {
@@ -153,7 +157,7 @@ public class CalenderService {
                 .runDistance(run.getRunDistance())
                 .memberRunStyle(run.getMemberRunStyle())
                 .runEvaluating(run.getRunEvaluating())
-                .runImageUrl(run.getRouteImageUrl())
+                .runImageUrl(run.getRunImageUrl())
                 .routeImageUrl(run.getRouteImageUrl())
                 .memo(run.getMemo())
                 .regDate(run.getRegDate())
@@ -217,5 +221,46 @@ public class CalenderService {
         if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
 
         runRepository.delete(run);
+    }
+
+    @Transactional
+    public void addRun(Member contextMember, RequestAddRunDto addRunData) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        List<Pet> pets = member.getPets();
+
+        // Pet 유효성 검사 - Start
+        // 넘겨받은 petId 가 현재 가진 펫 정보와 일치하는지 검사
+        Set<Long> petIdSet = pets.stream()
+                .map(Pet::getPetId)
+                .collect(Collectors.toSet());
+
+        List<PetCalDto> petCalList = addRunData.getPetCalList();
+
+        for (PetCalDto petCalData : petCalList) {
+            // 회원의 펫이 아닌 경우 예외 처리
+            if (!petIdSet.contains(petCalData.getPetId())) {
+                throw new CustomException(PET_NOT_MATCH);
+            }
+        }
+
+        // run 데이터 생성
+        Run run = runRepository.save(Run.builder()
+                .member(member)
+                .memberRunStyle(addRunData.getMemberRunStyle())
+                .memberCal(addRunData.getMemberCal())
+                .runTime(addRunData.getRunTime())
+                .runDistance(addRunData.getRunDistance())
+                .build());
+
+        for(PetCalDto petCalData : petCalList) {
+            RunPet runPet = runPetRepository.save(RunPet.builder()
+                    .pet(petRepository.findByPetId(petCalData.getPetId()))
+                    .petCal(petCalData.getPetCal())
+                    .build());
+
+            run.setRunPets(runPet);
+        }
+
+        run.setRegDate(addRunData.getRegDate());
     }
 }
