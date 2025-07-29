@@ -156,6 +156,7 @@ public class CalenderService {
                 .runTime(run.getRunTime())
                 .runDistance(run.getRunDistance())
                 .memberRunStyle(run.getMemberRunStyle())
+                .memberCal(run.getMemberCal())
                 .runEvaluating(run.getRunEvaluating())
                 .runImageUrl(run.getRunImageUrl())
                 .routeImageUrl(run.getRouteImageUrl())
