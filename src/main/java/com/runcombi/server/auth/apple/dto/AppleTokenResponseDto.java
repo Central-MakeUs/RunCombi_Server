@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class AppleTokenResponseDto {
+
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("expires_in")
@@ -15,4 +16,5 @@ public class AppleTokenResponseDto {
     private String refreshToken;
     @JsonProperty("token_type")
     private String tokenType;
+
 }

@@ -23,7 +23,6 @@ public class AppleController {
         AppleTokenResponseDto appleTokenResponseDto = appleLoginService.requestTokenToApple(appleLoginRequestDto.getAuthorizationCode());
         Map<String, Object> userInfo = appleLoginService.parseIdToken(appleTokenResponseDto.getIdToken());
         LoginResponseDTO loginResponseDTO = appleLoginService.appleLogin((String) userInfo.get("sub"), (String) userInfo.get("email"));
-
         return ApiResponse.onSuccess(loginResponseDTO);
     }
 }
