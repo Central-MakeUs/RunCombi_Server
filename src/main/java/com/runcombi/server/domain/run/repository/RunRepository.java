@@ -22,6 +22,10 @@ public interface RunRepository extends JpaRepository<Run, Long> {
 
     void deleteByMember(Member member);
 
+    // 한 달 평균 산책 시간 반환 (소수점 버림)
+    @Query("SELECT FLOOR(AVG(r.runTime)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Integer findAverageMemberRunTime(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     // 한 달 소모 칼로리 평균을 반환 (소수점 버림)
     @Query("SELECT FLOOR(AVG(r.memberCal)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Integer findAverageMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
