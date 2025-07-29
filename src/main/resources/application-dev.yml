@@ -20,6 +20,13 @@ spring:
     multipart:
       max-file-size: 5MB       # 개별 파일 크기 제한
       max-request-size: 20MB    # 전체 요청 크기 제한
+  apple:
+    grant-type: authorization_code
+    client-id: ${APPLE_CLIENT_ID}
+    key-id: ${APPLE_KEY_ID}
+    team-id: ${APPLE_TEAM_ID}
+    audience: https://appleid.apple.com
+    private-key: ${APPLE_PRIVATE_KEY}
 
 logging:
   level:
