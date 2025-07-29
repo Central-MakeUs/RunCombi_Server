@@ -35,7 +35,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AppleLoginService {
-    private final RestTemplate restTemplate;
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
@@ -65,6 +64,7 @@ public class AppleLoginService {
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
         try {
+            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<AppleTokenResponseDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
