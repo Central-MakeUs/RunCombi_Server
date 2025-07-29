@@ -97,8 +97,6 @@ public class KakaoLoginService {
 
             String accessToken = jwtService.createAccessToken(savedMember.getMemberId(), savedMember.getRole());
             String refreshToken = jwtService.createRefreshToken(savedMember.getMemberId(), savedMember.getRole());
-            System.out.println(accessToken);
-            System.out.println(refreshToken);
 
             savedMember.updateRefreshToken(refreshToken);
 
