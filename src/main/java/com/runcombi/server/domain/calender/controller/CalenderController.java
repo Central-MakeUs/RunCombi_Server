@@ -95,15 +95,13 @@ public class CalenderController {
         return ApiResponse.onSuccess("산책 정보 생성에 성공하였습니다.");
     }
 
-    /**
      @PostMapping("/calender/updateRunDetail")
      public ApiResponse<String> updateRunDetail(
      @AuthenticationPrincipal Member member,
-     @RequestBody RequestUpdqtRunDetailDto requestUpdqtRunDetailDto
+     @RequestBody RequestUpdateRunDetailDto requestUpdqtRunDetailDto
      ) {
      calenderService.updateRunDetail(member, requestUpdqtRunDetailDto);
 
      return ApiResponse.onSuccess("산책 정보 변경에 성공하였습니다.");
      }
-     */
 }
