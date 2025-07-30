@@ -60,12 +60,10 @@ public class Run  extends BaseTimeEntity {
         runPet.setRun(this);
     }
 
-    public void updateRun(Integer memberCal, Integer runTime, Double runDistance, RunEvaluating runEvaluating, String memo) {
+    public void updateRun(Integer memberCal, Integer runTime, Double runDistance) {
         this.memberCal = memberCal;
         this.runTime = runTime;
         this.runDistance = runDistance;
-        this.runEvaluating = runEvaluating;
-        this.memo = memo;
     }
 
     public void setRunImage(S3ImageReturnDto runImageReturnDto) {

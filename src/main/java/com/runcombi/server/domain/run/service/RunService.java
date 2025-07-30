@@ -106,7 +106,7 @@ public class RunService {
     }
 
     @Transactional
-    public void endRun(Member contextMember, RequestEndMemberRunDto memberRunData, RequestEndPetRunDto petRunDataList, MultipartFile routeImage, MultipartFile runImage) {
+    public void endRun(Member contextMember, RequestEndMemberRunDto memberRunData, RequestEndPetRunDto petRunDataList, MultipartFile routeImage) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
 
         // 해당 runId 가 없는 경우 RUN_ID_INVALID 예외 발생
@@ -114,7 +114,6 @@ public class RunService {
         // runId 와 memberId 가 일치하지 않는 경우 RUN_ID_INVALID 에외 발생
         if(run.getMember() != member) throw new CustomException(RUN_ID_INVALID);
         // 이미지 확장자 검증
-        if(!runImage.isEmpty()) s3Service.validateImageFile(runImage);
         if(!routeImage.isEmpty()) s3Service.validateImageFile(routeImage);
 
         // 회원의 Pet 인지 확인
@@ -139,19 +138,11 @@ public class RunService {
         S3ImageReturnDto routeImageReturnDto = s3Service.uploadRouteImage(routeImage, run.getRunId());
         run.setRouteImage(routeImageReturnDto);
 
-        // 이미지 등록
-        if(runImage != null) {
-            S3ImageReturnDto runImageReturnDto = s3Service.uploadRunImage(runImage, run.getRunId());
-            run.setRunImage(runImageReturnDto);
-        }
-
         // run 데이터 저장
         run.updateRun(
                 getMemberCal(member.getGender(), run.getMemberRunStyle(), member.getWeight(), memberRunData.getRunTime()),
                 memberRunData.getRunTime(),
-                memberRunData.getRunDistance(),
-                memberRunData.getRunEvaluating(),
-                memberRunData.getMemo()
+                memberRunData.getRunDistance()
         );
         runRepository.save(run);
 
