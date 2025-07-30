@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.run.service;
 
+import com.runcombi.server.domain.member.entity.Gender;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.pet.entity.Pet;
@@ -146,7 +147,7 @@ public class RunService {
 
         // run 데이터 저장
         run.updateRun(
-                memberRunData.getMemberCal(),
+                getMemberCal(member.getGender(), run.getMemberRunStyle(), member.getWeight(), memberRunData.getRunTime()),
                 memberRunData.getRunTime(),
                 memberRunData.getRunDistance(),
                 memberRunData.getRunEvaluating(),
@@ -158,12 +159,63 @@ public class RunService {
         for(PetCalDto petCalDto : petCalList) {
             Pet pet = petRepository.findByPetId(petCalDto.getPetId());
             RunPet runPet = runPetRepository.findByRunAndPet(run, pet).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
-            runPet.updateCal(petCalDto.getPetCal());
+            runPet.updateCal(getPetCal(pet.getRunStyle(), pet.getWeight(), memberRunData.getRunTime()));
             runPetRepository.save(runPet);
         }
     }
 
     public void setRunImage(Run run, S3ImageReturnDto memberImageReturnDto) {
         run.setRunImage(memberImageReturnDto);
+    }
+
+    public Integer getMemberCal(Gender gender, RunStyle memberRunStyle, Double weight, Integer runTime) {
+        int memberCal = 0;
+
+        if(gender == Gender.MALE) {
+            // 남성 칼로리 계산 (MET * 체중 * 운동 시간(h))
+            switch (memberRunStyle) {
+                case RUNNING:
+                    memberCal = (int) (7.5 * weight * (runTime / 60.0));
+                    break;
+                case WALKING:
+                    memberCal = (int) (4.8 * weight * (runTime / 60.0));
+                    break;
+                case SLOW_WALKING:
+                    memberCal = (int) (3.5 * weight * (runTime / 60.0));
+                    break;
+            }
+        }else if(gender == Gender.FEMALE){
+            // 여성 칼로리 계산 (MET * 체중 * 운동 시간(h))
+            switch (memberRunStyle) {
+                case RUNNING:
+                    memberCal = (int) (7.0 * weight * (runTime / 60.0));
+                    break;
+                case WALKING:
+                    memberCal = (int) (4.2 * weight * (runTime / 60.0));
+                    break;
+                case SLOW_WALKING:
+                    memberCal = (int) (3.0 * weight * (runTime / 60.0));
+                    break;
+            }
+        }
+
+        return memberCal;
+    }
+
+    public Integer getPetCal(RunStyle petRunStyle, Double weight, Integer runTime) {
+        int petCal = 0;
+        // 반려 동물 칼로리 계산 (체중 * 1.096 * 활동계수 * 운동 시간(h))
+        switch (petRunStyle) {
+            case RUNNING:
+                petCal = (int) (weight * 1.096 * 6.4 * (runTime / 60.0));
+                break;
+            case WALKING:
+                petCal = (int) (weight * 1.096 * 4.8 * (runTime / 60.0));
+                break;
+            case SLOW_WALKING:
+                petCal = (int) (weight * 1.096 * 3.2 * (runTime / 60.0));
+                break;
+        }
+        return petCal;
     }
 }
