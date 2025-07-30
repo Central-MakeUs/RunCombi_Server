@@ -95,19 +95,19 @@ public class AppleLoginService {
     // 3. client_secret JWT 발급
     private String generateClientSecret() {
         try {
-            RSAPrivateKey rsaPrivateKey = parsePrivateKeyPem(privateKey);
+            PrivateKey generatePrivateKey = parsePrivateKeyPem(privateKey);
 
             long now = System.currentTimeMillis();
             // claims 세팅
             String jwt = Jwts.builder()
                     .setHeaderParam("kid", keyId)
-                    .setHeaderParam("alg", "RS256")
+                    .setHeaderParam("alg", "ES256")
                     .setIssuer(teamId)
                     .setAudience("https://appleid.apple.com")
                     .setSubject(clientId)
                     .setIssuedAt(new Date(now))
                     .setExpiration(new Date(now + 60 * 60 * 1000L)) // 1시간
-                    .signWith(rsaPrivateKey, SignatureAlgorithm.RS256)
+                    .signWith(generatePrivateKey, SignatureAlgorithm.ES256)
                     .compact();
             return jwt;
         } catch (Exception e) {
@@ -115,12 +115,11 @@ public class AppleLoginService {
         }
     }
 
-    public static RSAPrivateKey parsePrivateKeyPem(String privateKeyPem) throws Exception {
+    public static PrivateKey parsePrivateKeyPem(String privateKeyPem) throws Exception {
         byte[] pkcs8EncodedBytes = Base64.getDecoder().decode(privateKeyPem);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-        return (RSAPrivateKey) privateKey;
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        return keyFactory.generatePrivate(keySpec);
     }
 
     @Transactional
