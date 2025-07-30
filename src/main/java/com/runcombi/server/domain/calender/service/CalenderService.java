@@ -155,6 +155,8 @@ public class CalenderService {
 
         return ResponseRunDto.builder()
                 .runId(run.getRunId())
+                .nickname(member.getNickname())
+                .profileImgUrl(member.getProfileImgUrl())
                 .runTime(run.getRunTime())
                 .runDistance(run.getRunDistance())
                 .memberRunStyle(run.getMemberRunStyle())
