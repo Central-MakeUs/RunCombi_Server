@@ -5,5 +5,4 @@ import lombok.Getter;
 @Getter
 public class PetCalDto {
     private Long petId;
-    private Integer petCal;
 }

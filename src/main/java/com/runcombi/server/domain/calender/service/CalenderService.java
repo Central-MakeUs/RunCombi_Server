@@ -11,6 +11,7 @@ import com.runcombi.server.domain.run.entity.RunEvaluating;
 import com.runcombi.server.domain.run.entity.RunPet;
 import com.runcombi.server.domain.run.repository.RunPetRepository;
 import com.runcombi.server.domain.run.repository.RunRepository;
+import com.runcombi.server.domain.run.service.RunService;
 import com.runcombi.server.global.exception.CustomException;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import com.runcombi.server.global.s3.service.S3Service;
@@ -36,6 +37,7 @@ public class CalenderService {
     private final MemberRepository memberRepository;
     private final PetRepository petRepository;
     private final RunPetRepository runPetRepository;
+    private final RunService runService;
     private final S3Service s3Service;
 
     public ResponseMonthRunDto getMonthData(Member contextMember, int year, int month) {
@@ -248,20 +250,40 @@ public class CalenderService {
         Run run = runRepository.save(Run.builder()
                 .member(member)
                 .memberRunStyle(addRunData.getMemberRunStyle())
-                .memberCal(addRunData.getMemberCal())
+                .memberCal(runService.getMemberCal(member.getGender(), addRunData.getMemberRunStyle(), member.getWeight(), addRunData.getRunTime()))
                 .runTime(addRunData.getRunTime())
                 .runDistance(addRunData.getRunDistance())
                 .build());
 
         for(PetCalDto petCalData : petCalList) {
+            Pet pet= petRepository.findByPetId(petCalData.getPetId());
             RunPet runPet = runPetRepository.save(RunPet.builder()
                     .pet(petRepository.findByPetId(petCalData.getPetId()))
-                    .petCal(petCalData.getPetCal())
+                    .petCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), addRunData.getRunTime()))
                     .build());
 
             run.setRunPets(runPet);
         }
 
         run.setRegDate(addRunData.getRegDate());
+    }
+
+    @Transactional
+    public void updateRunDetail(Member contextMember, RequestUpdateRunDetailDto requestUpdateRunDetailDto) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        Run run = runRepository.findById(requestUpdateRunDetailDto.getRunId()).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+
+        // 해당 회원의 운동 정보가 아닌 경우 예외처리
+        if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
+
+        // 세부 내용 업데이트
+        run.updateRunDetail(requestUpdateRunDetailDto, runService.getMemberCal(member.getGender(), requestUpdateRunDetailDto.getMemberRunStyle(), member.getWeight(), requestUpdateRunDetailDto.getRunTime()));
+
+        // 반려 동물 칼로리 업데이트
+        List<RunPet> runPets = run.getRunPets();
+        for(RunPet runPet : runPets) {
+            Pet pet = runPet.getPet();
+            runPet.updateCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), requestUpdateRunDetailDto.getRunTime()));
+        }
     }
 }

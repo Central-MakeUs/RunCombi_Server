@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.run.entity;
 
 import com.runcombi.server.domain.base.BaseTimeEntity;
+import com.runcombi.server.domain.calender.dto.RequestUpdateRunDetailDto;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.pet.entity.RunStyle;
 import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
@@ -59,12 +60,10 @@ public class Run  extends BaseTimeEntity {
         runPet.setRun(this);
     }
 
-    public void updateRun(Integer memberCal, Integer runTime, Double runDistance, RunEvaluating runEvaluating, String memo) {
+    public void updateRun(Integer memberCal, Integer runTime, Double runDistance) {
         this.memberCal = memberCal;
         this.runTime = runTime;
         this.runDistance = runDistance;
-        this.runEvaluating = runEvaluating;
-        this.memo = memo;
     }
 
     public void setRunImage(S3ImageReturnDto runImageReturnDto) {
@@ -87,5 +86,13 @@ public class Run  extends BaseTimeEntity {
 
     public void updateRegDate(LocalDateTime localDateTime) {
         this.setRegDate(localDateTime);
+    }
+
+    public void updateRunDetail(RequestUpdateRunDetailDto requestUpdateRunDetailDto, Integer memberCal) {
+        this.setRegDate(requestUpdateRunDetailDto.getRegDate());
+        this.memberRunStyle = requestUpdateRunDetailDto.getMemberRunStyle();
+        this.runTime = requestUpdateRunDetailDto.getRunTime();
+        this.runDistance = requestUpdateRunDetailDto.getRunDistance();
+        this.memberCal = memberCal;
     }
 }
