@@ -13,6 +13,8 @@ import java.util.List;
 @Builder
 public class ResponseRunDto {
     private Long runId;
+    private String nickname;
+    private String profileImgUrl;
     private Integer runTime; // minute 기준
     private Double runDistance; // km 기준
     private RunStyle memberRunStyle; // 사용자 산책 스타일
