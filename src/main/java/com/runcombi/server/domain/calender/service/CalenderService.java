@@ -194,7 +194,7 @@ public class CalenderService {
         if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
 
         // 이미지가 있으면 삭제
-        if(!run.getRunImageKey().isEmpty()) {
+        if(run.getRunImageKey() != null) {
             s3Service.deleteImage(run.getRunImageKey());
         }
 
