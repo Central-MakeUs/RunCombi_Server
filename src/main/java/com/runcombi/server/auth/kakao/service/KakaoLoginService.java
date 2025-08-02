@@ -12,9 +12,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +32,10 @@ import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 public class KakaoLoginService {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
+
+    @Value("${spring.kakao.admin-key}")
+    private String adminKey;
+
     @Transactional
     public LoginResponseDTO kakaoLogin(String kakaoAccessToken) {
         if(kakaoAccessToken == null) {
@@ -37,6 +44,7 @@ public class KakaoLoginService {
             throw new CustomException(KAKAO_TOKEN_EMPTY);
         }
         String userEmail = "";
+        Long kakaoUserId = null;
 
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
         HttpHeaders headers = new HttpHeaders();
@@ -60,6 +68,7 @@ public class KakaoLoginService {
                 log.error("invalid kakao token(kakaoAcount == null) ::::: {}", kakaoAccessToken);
                 throw new CustomException(KAKAO_TOKEN_INVALID);
             }
+            kakaoUserId = (Long) body.get("id");
             userEmail = (String) kakaoAccount.get("email");
         } catch(ExpiredJwtException e) {
             // 카카오 토큰이 만료된 경우
@@ -89,6 +98,7 @@ public class KakaoLoginService {
             // 2. 회원 없으면 빌드 + 저장
             Member newMember = Member.builder()
                     .email(finalUserEmail)
+                    .kakaoUserId(kakaoUserId)
                     .role(Role.USER)
                     .provider(Provider.KAKAO)
                     .isActive(MemberStatus.PENDING_AGREE)
@@ -141,6 +151,32 @@ public class KakaoLoginService {
                         .finishRegister("Y")
                         .build();
             }
+        }
+    }
+
+    public boolean unlinkKakaoAccount(Long kakaoUserId) {
+        String url = "https://kapi.kakao.com/v1/user/unlink";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "KakaoAK " + adminKey);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("target_id_type", "user_id");
+        params.add("target_id", String.valueOf(kakaoUserId));   // Long 타입이면 String.valueOf 사용
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url, HttpMethod.POST, entity, String.class
+            );
+            // 카카오 unlink 성공
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            // 카카오 unlink 실패
+            log.error("카카오 회원 UNLINK 실패: " + e.getMessage());
+            return false;
         }
     }
 }
