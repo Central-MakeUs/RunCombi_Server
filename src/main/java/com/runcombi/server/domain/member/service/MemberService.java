@@ -6,6 +6,7 @@ import com.runcombi.server.auth.jwt.dto.ResponseTokenDto;
 import com.runcombi.server.auth.kakao.service.KakaoLoginService;
 import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.MemberDto;
+import com.runcombi.server.domain.member.dto.ResponseDeleteDataDto;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
 import com.runcombi.server.domain.member.entity.*;
 import com.runcombi.server.domain.member.repository.MemberRepository;
@@ -269,6 +270,35 @@ public class MemberService {
         return ResponseTokenDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
+                .build();
+    }
+
+    public ResponseDeleteDataDto getDeleteData(Member contextMember) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+        List<Run> runs = runRepository.findByMember(member);
+        List<Pet> pets = member.getPets();
+
+        List<String> resultPetName = new ArrayList<>();
+        int resultRun = 0;
+        int resultRunImage = 0;
+
+        if(pets != null) {
+            for(Pet pet : pets) {
+                resultPetName.add(pet.getName());
+            }
+        }
+
+        if(runs != null) {
+            for(Run run : runs) {
+                resultRun ++;
+                if(run.getRunImageKey() != null) resultRunImage ++;
+            }
+        }
+
+        return ResponseDeleteDataDto.builder()
+                .resultPetName(resultPetName)
+                .resultRun(resultRun)
+                .resultRunImage(resultRunImage)
                 .build();
     }
 }

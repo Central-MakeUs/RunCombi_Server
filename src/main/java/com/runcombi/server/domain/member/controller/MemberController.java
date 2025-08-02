@@ -2,6 +2,7 @@ package com.runcombi.server.domain.member.controller;
 
 import com.runcombi.server.domain.member.dto.AgreeTermsRequestDto;
 import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
+import com.runcombi.server.domain.member.dto.ResponseDeleteDataDto;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.TermType;
@@ -76,5 +77,14 @@ public class MemberController {
         memberService.deleteAccount(member);
 
         return ApiResponse.onSuccess("회원 탈퇴에 성공하였습니다.");
+    }
+
+    @PostMapping("/member/getDeleteData")
+    public ApiResponse<ResponseDeleteDataDto> getDeleteData(
+            @AuthenticationPrincipal Member member
+    ) {
+        ResponseDeleteDataDto responseDeleteDataDto = memberService.getDeleteData(member);
+
+        return ApiResponse.onSuccess(responseDeleteDataDto);
     }
 }
