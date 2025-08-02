@@ -30,6 +30,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String email;   // 이메일
 
     private String sub; // 애플 고유 id
+    private String appleRefreshToken; // 애플 회원 탈퇴 시 필요한 RefreshToken
+
+    private Long kakaoUserId; // 카카오 회원 탈퇴 시 필요한 고유 Id
 
     private String nickname;    // 닉네임
 

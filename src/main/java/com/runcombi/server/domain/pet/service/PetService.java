@@ -67,7 +67,7 @@ public class PetService {
     public void setMemberPetDetail(Member contextMember, SetPetDetailDto petDetail, MultipartFile petImage) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
         // 이미지 파일 확장자 검증
-        if(!petImage.isEmpty()) s3Service.validateImageFile(petImage);
+        if(petImage != null) s3Service.validateImageFile(petImage);
 
         if(member.getPets().size() == 2) throw new CustomException(PET_COUNT_EXCEEDED);
         Pet pet = setPetDetail(member, petDetail);
@@ -87,7 +87,7 @@ public class PetService {
         // 회원의 반려 동물이 아닌경우 예외 처리
         if(member != pet.getMember()) throw new CustomException(PET_NOT_MATCH);
         // 이미지 확장자 검증
-        if(!petImage.isEmpty()) s3Service.validateImageFile(petImage);
+        if(petImage != null) s3Service.validateImageFile(petImage);
 
         pet.updatePetDetail(updatePetDetail);
 

@@ -27,6 +27,8 @@ spring:
     team-id: ${APPLE_TEAM_ID}
     audience: https://appleid.apple.com
     private-key: ${APPLE_PRIVATE_KEY}
+  kakao:
+    admin-key: ${KAKAO_ADMIN_KEY}
 logging:
   level:
     root: info

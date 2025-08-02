@@ -1,14 +1,13 @@
 package com.runcombi.server.domain.member.service;
 
+import com.runcombi.server.auth.apple.service.AppleLoginService;
 import com.runcombi.server.auth.jwt.JwtService;
 import com.runcombi.server.auth.jwt.dto.ResponseTokenDto;
+import com.runcombi.server.auth.kakao.service.KakaoLoginService;
 import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.MemberDto;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
-import com.runcombi.server.domain.member.entity.Member;
-import com.runcombi.server.domain.member.entity.MemberStatus;
-import com.runcombi.server.domain.member.entity.MemberTerm;
-import com.runcombi.server.domain.member.entity.TermType;
+import com.runcombi.server.domain.member.entity.*;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.member.repository.MemberTermRepository;
 import com.runcombi.server.domain.pet.dto.PetDto;
@@ -45,6 +44,8 @@ public class MemberService {
     private final S3Service s3Service;
     private final RunRepository runRepository;
     private final JwtService jwtService;
+    private final AppleLoginService appleLoginService;
+    private final KakaoLoginService kakaoLoginService;
     @Transactional
     public void setMemberTerms(List<TermType> agreeTermsList, Member contextMember) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
@@ -123,8 +124,8 @@ public class MemberService {
         petService.petDetailNullCheck(petDetail);
 
         // 이미지 파일 확장자 검증
-        if(!memberImage.isEmpty()) s3Service.validateImageFile(memberImage);
-        if(!petImage.isEmpty()) s3Service.validateImageFile(petImage);
+        if(memberImage != null) s3Service.validateImageFile(memberImage);
+        if(petImage != null) s3Service.validateImageFile(petImage);
 
         // 회원 정보 저장
         setMemberDetail(member, memberDetail);
@@ -207,7 +208,7 @@ public class MemberService {
     @Transactional
     public void updateMemberDetail(Member member, SetMemberDetailDto updateMemberDto, MultipartFile memberImage) {
         // 파일 확장자 검증
-        if(!memberImage.isEmpty()) s3Service.validateImageFile(memberImage);
+        if(memberImage != null) s3Service.validateImageFile(memberImage);
 
         member.setMemberDetail(updateMemberDto);
 
@@ -225,6 +226,15 @@ public class MemberService {
     @Transactional
     public void deleteAccount(Member contextMember) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+
+        boolean result = false;
+        if(member.getProvider() == Provider.KAKAO) {
+            result = kakaoLoginService.unlinkKakaoAccount(member.getKakaoUserId());
+            if(!result) throw new CustomException(KAKAO_UNLINK_FAIL);
+        } else if(member.getProvider() == Provider.APPLE) {
+            result = appleLoginService.revokeAppleToken(member.getAppleRefreshToken());
+            if(!result) throw new CustomException(APPLE_REVOKE_FAIL);
+        }
 
         // 산책 이미지 삭제
         List<Run> runList = runRepository.findByMember(member);
