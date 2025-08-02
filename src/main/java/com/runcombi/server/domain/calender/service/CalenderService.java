@@ -188,7 +188,7 @@ public class CalenderService {
         Run run = runRepository.findById(runId).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
 
         // 이미지 확장자 검증
-        if(!runImage.isEmpty()) s3Service.validateImageFile(runImage);
+        if(runImage != null) s3Service.validateImageFile(runImage);
 
         // 해당 회원의 운동 정보가 아닌 경우 예외처리
         if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);

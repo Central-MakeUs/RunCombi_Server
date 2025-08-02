@@ -43,9 +43,7 @@ public class MemberController {
     public ApiResponse<GetMemberDetailDto> getMemberDetail(
             @AuthenticationPrincipal Member member
     ) {
-        log.info("member.getMemberId ::::: {}", member.getMemberId());
         List<Pet> petList = petService.getPetList(member);
-        log.info("petList ::::: {}", petList);
         GetMemberDetailDto getMemberDetailDto = memberService.getMemberPetDetail(member, petList);
         return ApiResponse.onSuccess(getMemberDetailDto);
     }

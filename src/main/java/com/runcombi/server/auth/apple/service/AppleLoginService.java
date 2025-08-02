@@ -123,7 +123,7 @@ public class AppleLoginService {
     }
 
     @Transactional
-    public LoginResponseDTO appleLogin(String sub, String email) {
+    public LoginResponseDTO appleLogin(String sub, String email, String appleRefreshToken) {
         Optional<Member> optionalMember = memberRepository.findBySubAndProvider(sub, Provider.APPLE);
         if(optionalMember.isEmpty()) {
             // 1. 회원 없으면 빌드 + 저장
@@ -132,6 +132,7 @@ public class AppleLoginService {
                     .email(email)
                     .role(Role.USER)
                     .provider(Provider.APPLE)
+                    .appleRefreshToken(appleRefreshToken)
                     .isActive(MemberStatus.PENDING_AGREE)
                     .build();
             Member savedMember = memberRepository.save(newMember);
@@ -183,5 +184,34 @@ public class AppleLoginService {
         }
     }
 
+    public boolean revokeAppleToken(String refreshToken) {
+        String clientSecret = generateClientSecret();
 
+        String url = "https://appleid.apple.com/auth/revoke";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+        form.add("token", refreshToken);
+        form.add("token_type_hint", "refresh_token");
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+            // Apple의 revoke API는 성공해도 body가 empty일 수 있어서, 200 OK면 성공 처리
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (HttpStatusCodeException e) {
+            log.error("애플 회원 탈퇴(토큰폐기) 실패: " + e.getResponseBodyAsString(), e);
+            return false;
+        }
+    }
 }

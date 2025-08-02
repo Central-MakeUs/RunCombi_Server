@@ -17,6 +17,10 @@ public enum CustomErrorList implements CustomErrorCode{
     KAKAO_TOKEN_EMPTY(HttpStatus.UNAUTHORIZED, "KAKAO0001", "토큰값이 존재하지 않습니다."),
     KAKAO_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "KAKAO0002", "유효하지 않은 카카오 인증 토큰입니다."),
     KAKAO_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "KAKAO0003", "만료된 카카오 인증 토큰입니다."),
+    KAKAO_UNLINK_FAIL(HttpStatus.UNAUTHORIZED, "KAKAO0004", "KAKAO 회원 탈퇴 요청에 실패했습니다."),
+
+    // Apple 로그인
+    APPLE_REVOKE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "APPLE0001", "APPLE 회원 탈퇴 요청에 실패했습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER0001", "사용자가 존재하지 않습니다."),
