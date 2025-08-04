@@ -48,7 +48,11 @@ public enum CustomErrorList implements CustomErrorCode{
     FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "FILE0001", "이미지 확장자 파일이 아닙니다."),
 
     // 필수 필드 값이 비어있는 경우 에러
-    DEFAULT_FIELD_NULL(HttpStatus.BAD_REQUEST, "FIELD0001", "필수 입력 필드가 비어있습니다.");
+    DEFAULT_FIELD_NULL(HttpStatus.BAD_REQUEST, "FIELD0001", "필수 입력 필드가 비어있습니다."),
+
+    // Discord
+    WEBHOOK_SUGGESTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DISCORD0001", "개선제안에 실패하였습니다."),
+    WEBHOOK_LEAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DISCORD0002", "회원 탈퇴 사유 등록에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
