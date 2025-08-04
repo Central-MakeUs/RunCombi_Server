@@ -252,7 +252,7 @@ public class CalenderService {
         Run run = runRepository.save(Run.builder()
                 .member(member)
                 .memberRunStyle(addRunData.getMemberRunStyle())
-                .memberCal(runService.getMemberCal(member.getGender(), addRunData.getMemberRunStyle(), member.getWeight(), addRunData.getRunTime()))
+                .memberCal(runService.getMemberCal(member.getGender(), addRunData.getMemberRunStyle(), member.getWeight(), addRunData.getRunDistance()))
                 .runTime(addRunData.getRunTime())
                 .runDistance(addRunData.getRunDistance())
                 .build());
@@ -261,7 +261,7 @@ public class CalenderService {
             Pet pet= petRepository.findByPetId(petCalData.getPetId());
             RunPet runPet = runPetRepository.save(RunPet.builder()
                     .pet(petRepository.findByPetId(petCalData.getPetId()))
-                    .petCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), addRunData.getRunTime()))
+                    .petCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), addRunData.getRunDistance()))
                     .build());
 
             run.setRunPets(runPet);
@@ -279,13 +279,13 @@ public class CalenderService {
         if(run.getMember() != member) throw new CustomException(RUN_MEMBER_NOT_MATCH);
 
         // 세부 내용 업데이트
-        run.updateRunDetail(requestUpdateRunDetailDto, runService.getMemberCal(member.getGender(), requestUpdateRunDetailDto.getMemberRunStyle(), member.getWeight(), requestUpdateRunDetailDto.getRunTime()));
+        run.updateRunDetail(requestUpdateRunDetailDto, runService.getMemberCal(member.getGender(), requestUpdateRunDetailDto.getMemberRunStyle(), member.getWeight(), requestUpdateRunDetailDto.getRunDistance()));
 
         // 반려 동물 칼로리 업데이트
         List<RunPet> runPets = run.getRunPets();
         for(RunPet runPet : runPets) {
             Pet pet = runPet.getPet();
-            runPet.updateCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), requestUpdateRunDetailDto.getRunTime()));
+            runPet.updateCal(runService.getPetCal(pet.getRunStyle(), pet.getWeight(), requestUpdateRunDetailDto.getRunDistance()));
         }
     }
 }
