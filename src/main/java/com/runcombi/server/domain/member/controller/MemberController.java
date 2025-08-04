@@ -1,9 +1,6 @@
 package com.runcombi.server.domain.member.controller;
 
-import com.runcombi.server.domain.member.dto.AgreeTermsRequestDto;
-import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
-import com.runcombi.server.domain.member.dto.ResponseDeleteDataDto;
-import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
+import com.runcombi.server.domain.member.dto.*;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.TermType;
 import com.runcombi.server.domain.member.service.MemberService;
@@ -86,5 +83,15 @@ public class MemberController {
         ResponseDeleteDataDto responseDeleteDataDto = memberService.getDeleteData(member);
 
         return ApiResponse.onSuccess(responseDeleteDataDto);
+    }
+
+    @PostMapping("/member/suggestion")
+    public ApiResponse<String> suggestion(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestSuggestionDto requestSuggestionDto
+    ) {
+        memberService.suggestion(member, requestSuggestionDto.getSggMsg());
+
+        return ApiResponse.onSuccess("제안 등록에 성공했습니다.");
     }
 }

@@ -29,6 +29,10 @@ spring:
     private-key: ${APPLE_PRIVATE_KEY}
   kakao:
     admin-key: ${KAKAO_ADMIN_KEY}
+  discord:
+    suggestion-webhook: ${DISCORD_SUGGESTION_WEBHOOK} # 개선 제안용 웹훅
+    leave-webhook: ${DISCORD_LEAVE_WEBHOOK}           # 탈퇴 사유용 웹훅
+    app-icon: ${APP_ICON}                             # 앱 아이콘
 logging:
   level:
     root: info
