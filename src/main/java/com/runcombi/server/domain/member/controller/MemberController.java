@@ -94,4 +94,14 @@ public class MemberController {
 
         return ApiResponse.onSuccess("제안 등록에 성공했습니다.");
     }
+
+    @PostMapping("/member/leaveReason")
+    public ApiResponse<String> leaveReason(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestLeaveReasonDto requestLeaveReasonDto
+    ) {
+        memberService.leaveReason(member, requestLeaveReasonDto.getReason());
+
+        return ApiResponse.onSuccess("제안 등록에 성공했습니다.");
+    }
 }
