@@ -1,13 +1,12 @@
 package com.runcombi.server.domain.member.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runcombi.server.auth.apple.service.AppleLoginService;
 import com.runcombi.server.auth.jwt.JwtService;
 import com.runcombi.server.auth.jwt.dto.ResponseTokenDto;
 import com.runcombi.server.auth.kakao.service.KakaoLoginService;
-import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
-import com.runcombi.server.domain.member.dto.MemberDto;
-import com.runcombi.server.domain.member.dto.ResponseDeleteDataDto;
-import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
+import com.runcombi.server.domain.member.dto.*;
 import com.runcombi.server.domain.member.entity.*;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.member.repository.MemberTermRepository;
@@ -23,13 +22,16 @@ import com.runcombi.server.global.s3.dto.S3ImageReturnDto;
 import com.runcombi.server.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.runcombi.server.global.exception.code.CustomErrorList.*;
@@ -47,6 +49,14 @@ public class MemberService {
     private final JwtService jwtService;
     private final AppleLoginService appleLoginService;
     private final KakaoLoginService kakaoLoginService;
+
+    @Value("${spring.discord.suggestion-webhook}")
+    private String sggWebhookUrl;
+    @Value("${spring.discord.leave-webhook}")
+    private String leaveWebhookUrl;
+    @Value("${spring.discord.app-icon}")
+    private String appIconUrl;
+
     @Transactional
     public void setMemberTerms(List<TermType> agreeTermsList, Member contextMember) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
@@ -300,5 +310,107 @@ public class MemberService {
                 .resultRun(resultRun)
                 .resultRunImage(resultRunImage)
                 .build();
+    }
+
+    public void suggestion(Member contextMember, String sggMsg){
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+
+        try{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // JSON 데이터 만들기
+            Map<String, Object> embed = new HashMap<>();
+            embed.put("title", "새로운 개선제안이 도착했습니다.");
+            String totalMsg = String.format(
+                    "**회원 정보 및 개선 제안**\n" +
+                    "1. 회원 번호 : %s\n" +
+                    "2. 이메일 : %s\n" +
+                    "3. 가입 SNS : %s\n" +
+                    "4. 가입일 : %s\n" +
+                    "5. 개선 제안 : %s\n" +
+                    "6. 등록 시간 : %s",
+                    member.getMemberId(),
+                    member.getEmail(),
+                    member.getProvider(),
+                    member.getRegDate(),
+                    sggMsg,
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            );
+            embed.put("description", totalMsg);
+            Map<String, String> thumbnail = new HashMap<>();
+            thumbnail.put("url", appIconUrl);
+            embed.put("thumbnail", thumbnail);
+
+            Map<String, Object> jsonData = new HashMap<>();
+            jsonData.put("embeds", Collections.singletonList(embed));
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonBody = mapper.writeValueAsString(jsonData);
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
+            // discord 웹훅 호출
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    sggWebhookUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+        }catch (JsonProcessingException e) {
+            throw new CustomException(WEBHOOK_SUGGESTION_ERROR);
+        }
+    }
+
+    public void leaveReason(Member contextMember, String reason) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+
+        try{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // JSON 데이터 만들기
+            Map<String, Object> embed = new HashMap<>();
+            embed.put("title", "회원 탈퇴 사유가 도착했습니다.");
+            String totalMsg = String.format(
+                    "**회원 탈퇴 사유**\n" +
+                    "1. 회원 번호 : %s\n" +
+                    "2. 이메일 : %s\n" +
+                    "3. 가입 SNS : %s\n" +
+                    "4. 가입일 : %s\n" +
+                    "5. 탈퇴 사유 : %s\n" +
+                    "6. 탈퇴 시간 : %s",
+                    member.getMemberId(),
+                    member.getEmail(),
+                    member.getProvider(),
+                    member.getRegDate(),
+                    reason,
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            );
+            embed.put("description", totalMsg);
+            Map<String, String> thumbnail = new HashMap<>();
+            thumbnail.put("url", appIconUrl);
+            embed.put("thumbnail", thumbnail);
+
+            Map<String, Object> jsonData = new HashMap<>();
+            jsonData.put("embeds", Collections.singletonList(embed));
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonBody = mapper.writeValueAsString(jsonData);
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
+            // discord 웹훅 호출
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    leaveWebhookUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+        }catch (JsonProcessingException e) {
+            throw new CustomException(WEBHOOK_LEAVE_ERROR);
+        }
     }
 }
