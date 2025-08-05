@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -86,13 +87,13 @@ public class CalenderController {
     }
 
     @PostMapping("/calender/addRun")
-    public ApiResponse<String> addRun(
+    public ApiResponse<Map<String, Long>> addRun(
         @AuthenticationPrincipal Member member,
         @RequestBody RequestAddRunDto addRunData
     ) {
-        calenderService.addRun(member, addRunData);
+        Map<String, Long> result = calenderService.addRun(member, addRunData);
 
-        return ApiResponse.onSuccess("산책 정보 생성에 성공하였습니다.");
+        return ApiResponse.onSuccess(result);
     }
 
      @PostMapping("/calender/updateRunDetail")

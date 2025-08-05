@@ -229,7 +229,7 @@ public class CalenderService {
     }
 
     @Transactional
-    public void addRun(Member contextMember, RequestAddRunDto addRunData) {
+    public Map<String, Long> addRun(Member contextMember, RequestAddRunDto addRunData) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
         List<Pet> pets = member.getPets();
 
@@ -268,6 +268,11 @@ public class CalenderService {
         }
 
         run.setRegDate(addRunData.getRegDate());
+
+        Map<String, Long> result = new HashMap<>();
+        Long runId = run.getRunId();
+        result.put("runId", runId);
+        return result;
     }
 
     @Transactional
