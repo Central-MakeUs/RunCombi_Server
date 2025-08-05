@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RequestLeaveReasonDto {
-    private String reason;
+    private List<String> reason;
 }
