@@ -363,7 +363,7 @@ public class MemberService {
         }
     }
 
-    public void leaveReason(Member contextMember, String reason) {
+    public void leaveReason(Member contextMember, List<String> reason) {
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
 
         try{

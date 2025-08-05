@@ -102,6 +102,6 @@ public class MemberController {
     ) {
         memberService.leaveReason(member, requestLeaveReasonDto.getReason());
 
-        return ApiResponse.onSuccess("제안 등록에 성공했습니다.");
+        return ApiResponse.onSuccess("탈퇴 사유 등록에 성공했습니다.");
     }
 }
