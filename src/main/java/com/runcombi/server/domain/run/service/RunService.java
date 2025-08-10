@@ -66,7 +66,7 @@ public class RunService {
         // 최초 산책인지 표기
         String isFirstRun = "N";
         List<Run> runList = runRepository.findByMember(member);
-        if(runList == null) {
+        if(runList.isEmpty()) {
             isFirstRun = "Y";
         }
 
