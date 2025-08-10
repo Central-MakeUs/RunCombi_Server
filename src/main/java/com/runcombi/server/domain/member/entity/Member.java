@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.member.entity;
 
+import com.runcombi.server.domain.announcement.entity.AnnouncementView;
 import com.runcombi.server.domain.base.BaseTimeEntity;
 import com.runcombi.server.domain.member.dto.SetMemberDetailDto;
 import com.runcombi.server.domain.pet.entity.Pet;
@@ -64,6 +65,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private final List<MemberTerm> memberTerms  = new ArrayList<>();; // 약관 동의
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<AnnouncementView> announcementViewList = new ArrayList<>();
+
     // 기타 필드 및 메서드
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -77,6 +81,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     public void addPet(Pet pet) {
         this.pets.add(pet);
         pet.setMember(this);
+    }
+
+    public void addAnnouncementView(AnnouncementView announcementView) {
+        this.announcementViewList.add(announcementView);
+        announcementView.setMember(this);
     }
 
     public void deletePet(Pet pet) {
