@@ -53,10 +53,11 @@ public class AnnouncementController {
     }
 
     @PostMapping("/getAnnouncementDetail")
-    public ResponseAnnouncementDetailDto getAnnouncementDetail(
+    public ApiResponse<ResponseAnnouncementDetailDto> getAnnouncementDetail(
             @AuthenticationPrincipal Member member,
             @RequestBody RequestAnnouncementIdDto requestAnnouncementIdDto
     ) {
-        return announcementService.getAnnouncementDetail(member, requestAnnouncementIdDto.getAnnouncementId());
+        ResponseAnnouncementDetailDto announcementDetail = announcementService.getAnnouncementDetail(member, requestAnnouncementIdDto.getAnnouncementId());
+        return ApiResponse.onSuccess(announcementDetail);
     }
 }
