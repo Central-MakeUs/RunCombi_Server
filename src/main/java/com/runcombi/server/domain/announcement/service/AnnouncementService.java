@@ -113,11 +113,7 @@ public class AnnouncementService {
         } else {
             // 처음 본 공지사항 및 이벤트인 경우
             AnnouncementView announcementView = AnnouncementView.builder().build();
-//            AnnouncementView announcementView = announcementViewRepository.save(
-//                    AnnouncementView.builder()
-//                            .code(makeCode(member.getMemberId(), announcement.getTitle()))
-//                            .build()
-//            );
+
             // 이벤트의 경우 이벤트 코드 값 추가
             if(announcement.getAnnouncementType() == AnnouncementType.EVENT) {
 
