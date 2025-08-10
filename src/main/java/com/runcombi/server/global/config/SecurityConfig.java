@@ -36,6 +36,8 @@ public class SecurityConfig {
                 "/auth/kakao/**",
                 "/auth/refresh",
                 "/version/check",
+                "/announcement/addAnnouncement",
+                "/announcement/deleteAnnouncement",
                 "/h2-console"
         ); // 정적 리소스 및 특정 경로 Security FilterChain 무시
     }
