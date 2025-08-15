@@ -3,6 +3,9 @@ package com.runcombi.server.admin.controller;
 import com.runcombi.server.domain.announcement.dto.ResponseAnnouncementDto;
 import com.runcombi.server.domain.announcement.entity.Announcement;
 import com.runcombi.server.domain.announcement.service.AnnouncementService;
+import com.runcombi.server.domain.member.entity.Member;
+import com.runcombi.server.domain.member.entity.Role;
+import com.runcombi.server.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +20,7 @@ import java.util.List;
 public class AdminController {
 
     private final AnnouncementService announcementService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -37,8 +41,8 @@ public class AdminController {
 
     @GetMapping("/member")
     public String memberPage(Model model) {
-
-//        model.addAttribute("memberList", memberList);
+        List<Member> memberList = memberRepository.findByRole(Role.USER);
+        model.addAttribute("memberList", memberList);
         return "admin/member";
     }
 }
