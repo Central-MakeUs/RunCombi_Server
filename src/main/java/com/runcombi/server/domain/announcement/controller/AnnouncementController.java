@@ -23,17 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnnouncementController {
     private final AnnouncementService announcementService;
-    @PostMapping("/addAnnouncement")
+    /*@PostMapping("/addAnnouncement")
     public ApiResponse<String> addAnnouncement(
             @RequestBody RequestAddAnnouncementDto requestAddAnnouncementDto
-            // TODO : 운영자인지 확인 이후 작업 허용 코드 추가
     ) {
         announcementService.addAnnouncement(requestAddAnnouncementDto);
 
         return ApiResponse.onSuccess("등록에 성공하였습니다.");
-    }
+    }*/
 
-    @PostMapping("/deleteAnnouncement")
+    /*@PostMapping("/deleteAnnouncement")
     public ApiResponse<String> deleteAnnouncement(
             @RequestBody RequestAnnouncementIdDto requestAnnouncementIdDto
             // TODO : 운영자인지 확인 이후 작업 허용 코드 추가
@@ -41,7 +40,7 @@ public class AnnouncementController {
         announcementService.deleteAnnouncement(requestAnnouncementIdDto.getAnnouncementId());
 
         return ApiResponse.onSuccess("삭제에 성공하였습니다.");
-    }
+    }*/
 
     @PostMapping("/getAnnouncementList")
     public ApiResponse<List<ResponseAnnouncementDto>> getAnnouncementList(
