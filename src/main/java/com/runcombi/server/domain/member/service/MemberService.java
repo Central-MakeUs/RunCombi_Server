@@ -267,6 +267,38 @@ public class MemberService {
     }
 
     @Transactional
+    public void deleteAccount(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+
+        boolean result = false;
+        if(member.getProvider() == Provider.KAKAO) {
+            result = kakaoLoginService.unlinkKakaoAccount(member.getKakaoUserId());
+            if(!result) throw new CustomException(KAKAO_UNLINK_FAIL);
+        } else if(member.getProvider() == Provider.APPLE) {
+            result = appleLoginService.revokeAppleToken(member.getAppleRefreshToken());
+            if(!result) throw new CustomException(APPLE_REVOKE_FAIL);
+        }
+
+        // 산책 이미지 삭제
+        List<Run> runList = runRepository.findByMember(member);
+        for(Run run : runList) {
+            if(run.getRouteImageKey() != null) s3Service.deleteImage(run.getRouteImageKey());
+        }
+
+        // 반려 동물 이미지 삭제
+        List<Pet> petList = petRepository.findAllByMember(member);
+        for(Pet pet : petList) {
+            if(pet.getPetImageKey() != null) s3Service.deleteImage(pet.getPetImageKey());
+        }
+
+        // 회원 이미지 삭제
+        if(member.getProfileImgKey() != null) s3Service.deleteImage(member.getProfileImgKey());
+
+        runRepository.deleteByMember(member);
+        memberRepository.delete(member);
+    }
+
+    @Transactional
     public ResponseTokenDto regenerateAccessToken(String refreshToken) {
         // 토큰 유효성 검사
         if (!jwtService.validateTokenBoolean(refreshToken)) throw new CustomException(REFRESH_TOKEN_INVALID);

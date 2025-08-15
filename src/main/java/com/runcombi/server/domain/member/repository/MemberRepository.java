@@ -2,8 +2,10 @@ package com.runcombi.server.domain.member.repository;
 
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.Provider;
+import com.runcombi.server.domain.member.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -15,4 +17,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findBySubAndProvider(String sub, Provider provider);
 
     Optional<Member> findByEmail(String email);
+
+    // Role이 USER인 Member 리스트 반환
+    List<Member> findByRole(Role role);
 }

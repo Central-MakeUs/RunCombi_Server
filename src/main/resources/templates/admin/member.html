@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
-    <title>공지 관리</title>
+    <title>회원 관리</title>
 </head>
 <body>
 <!-- 공통 네비게이션 바 호출 -->
@@ -15,32 +15,33 @@
             <p>회원 관리 페이지입니다.</p>
             <div class="detail-box">
                 <button type="button" class="toggle-btn view-member" style="margin-bottom: 20px">회원 목록 보기</button>
-                <div class="member-list-section" style="display:none;">
+                <div class="member-list-section" style="display:none; overflow-x: auto;">
                     <table border="1" cellpadding="10">
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>TYPE</th>
-                            <th>제목</th>
-                            <th>작성일</th>
+                            <th>PROVIDER</th>
+                            <th>EMAIL</th>
+                            <th>닉네임</th>
+                            <th>생성일</th>
                             <th>삭제</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="announcement : ${announcementList}">
-                            <td th:text="${announcement.announcementId}">ID</td>
-                            <td th:text="${announcement.announcementType}">TYPE</td>
-                            <td th:text="${announcement.title}">제목</td>
-                            <td th:text="${#strings.substring(announcement.regDate, 0, 10)}">등록일</td>
+                        <tr th:each="member : ${memberList}">
+                            <td th:text="${member.memberId}">ID</td>
+                            <td th:text="${member.provider}">PROVIDER</td>
+                            <td th:text="${member.email}">EMAIL</td>
+                            <td th:text="${member.nickname}">닉네임</td>
+                            <td th:text="${#strings.substring(member.regDate, 0, 10)}">생성일</td>
                             <td>
-                                <button onclick="deleteAnnouncement(this)">삭제</button>
+                                <button onclick="deleteMember(this)">삭제</button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <!--<div class="detail-box">내용 3번입니다.</div>-->
         </div>
     </main>
 
@@ -49,6 +50,36 @@
             const formSection = document.querySelector('.member-list-section');
             formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
         });
+
+        function deleteMember(btn) {
+            const row = btn.closest('tr'); // 버튼이 속한 <tr> 찾기
+            const tds = row.querySelectorAll('td');
+
+            const id = tds[0].innerText; // 첫번째 td는 id
+            const email = tds[2].innerText; // 두번째 td는 email
+            const nickname = tds[3].innerText; // 세번째 td는 nickname
+
+            if (confirm('ID: ' + id + '\n닉네임: ' + nickname + '\n이메일: ' + email + '\n회원 정보를 삭제하시겠습니까?')) {
+                let data = {
+                    memberId : id
+                }
+
+                // 회원 정보 삭제
+                fetch('/admin/deleteMember', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).then(res => {
+                    if(res.ok) {
+                        alert('삭제 성공');
+                        location.reload();
+                    } else {
+                        alert('에러 발생');
+                        location.reload();
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
