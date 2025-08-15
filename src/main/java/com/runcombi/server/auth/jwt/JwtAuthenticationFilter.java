@@ -24,6 +24,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // /admin/** 경로에 대해서는 인증 건너뛰기
+        String path = request.getServletPath();
+        if (path.startsWith("/admin")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = getTokenFromRequest(request);
 
         if (StringUtils.isNotEmpty(token)) {
