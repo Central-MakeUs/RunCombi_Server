@@ -9,6 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
-    @Query("SELECT a FROM Announcement a WHERE a.display = 'Y' AND :today BETWEEN a.startDate AND a.endDate")
+    @Query("SELECT a FROM Announcement a WHERE a.display = 'Y' AND :today BETWEEN a.startDate AND a.endDate ORDER BY a.regDate DESC")
     List<Announcement> findActiveAnnouncementList(@Param("today") LocalDate today);
 }

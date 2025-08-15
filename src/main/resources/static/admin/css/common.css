@@ -46,7 +46,7 @@
 }
 
 .menu li a:hover {
-    background-color: #444;
+    color: #e8ffa3;
 }
 
 body {
@@ -127,4 +127,10 @@ button {
 }
 button:hover {
     background-color: #e8ffa3;
+}
+
+table {
+    width: 100%; /* 부모 너비 내에 맞춤 */
+    table-layout: auto; /* 또는 fixed, 필요에 따라 */
+    border-collapse: collapse; /* 선 깔끔하게 */
 }

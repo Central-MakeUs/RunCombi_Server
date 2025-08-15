@@ -15,7 +15,7 @@
             <p>공지 관리 페이지입니다.</p>
             <div class="detail-box">
                 <button type="button" class="toggle-btn add-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 추가</button>
-                <div class="form-section" style="display:none;">
+                <div class="form-section" style="display:none; overflow-x: auto;">
                     <form id="announcementForm" onsubmit="return submitForm();" style="margin-top: 10px">
                         <!-- 공지/이벤트 선택 -->
                         <div style="margin-bottom: 15px;">
@@ -70,7 +70,7 @@
             </div>
             <div class="detail-box">
                 <button type="button" class="toggle-btn delete-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 삭제</button>
-                <div class="event-list-section" style="display:none;">
+                <div class="event-list-section" style="display:none; overflow-x: auto;">
                     <table border="1" cellpadding="10">
                         <thead>
                         <tr>
@@ -240,6 +240,7 @@
                         location.reload();
                     } else {
                         alert('에러 발생');
+                        location.reload();
                     }
                 });
             }
