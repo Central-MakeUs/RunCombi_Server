@@ -34,4 +34,11 @@ public class AdminController {
         model.addAttribute("announcementList", announcementList);
         return "admin/announcement";
     }
+
+    @GetMapping("/member")
+    public String memberPage(Model model) {
+
+//        model.addAttribute("memberList", memberList);
+        return "admin/member";
+    }
 }

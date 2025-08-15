@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <title>공지 관리</title>
+</head>
+<body>
+<!-- 공통 네비게이션 바 호출 -->
+<div th:insert="admin/fragments/navbar :: navbar"></div>
+    <main class="content">
+        <h1>회원 관리</h1>
+        <div class="box">
+            <p>회원 관리 페이지입니다.</p>
+            <div class="detail-box">
+                <button type="button" class="toggle-btn view-member" style="margin-bottom: 20px">회원 목록 보기</button>
+                <div class="member-list-section" style="display:none;">
+                    <table border="1" cellpadding="10">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>TYPE</th>
+                            <th>제목</th>
+                            <th>작성일</th>
+                            <th>삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="announcement : ${announcementList}">
+                            <td th:text="${announcement.announcementId}">ID</td>
+                            <td th:text="${announcement.announcementType}">TYPE</td>
+                            <td th:text="${announcement.title}">제목</td>
+                            <td th:text="${#strings.substring(announcement.regDate, 0, 10)}">등록일</td>
+                            <td>
+                                <button onclick="deleteAnnouncement(this)">삭제</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--<div class="detail-box">내용 3번입니다.</div>-->
+        </div>
+    </main>
+
+    <script>
+        document.querySelector('.view-member').addEventListener('click', function() {
+            const formSection = document.querySelector('.member-list-section');
+            formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
