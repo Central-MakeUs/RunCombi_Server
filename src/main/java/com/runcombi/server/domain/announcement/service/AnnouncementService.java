@@ -88,9 +88,6 @@ public class AnnouncementService {
 
     @Transactional
     public ResponseAnnouncementDetailDto getAnnouncementDetail(Member contextMember, Long announcementId) {
-        // TODO : 아래 코드처럼 announcementView 생성해서 양방향 매핑하기
-        //        AnnouncementView announcementView = AnnouncementView.builder().build();
-        //        announcement.addAnnouncementView(announcementView);
         Member member = memberRepository.findByMemberId(contextMember.getMemberId());
         Announcement announcement = announcementRepository.findById(announcementId).orElseThrow(() -> new CustomException(ANNOUNCEMENT_NOT_FOUND));
         AnnouncementDetail announcementDetail = announcement.getAnnouncementDetail();
@@ -156,5 +153,9 @@ public class AnnouncementService {
         } catch(NoSuchAlgorithmException e) {
             throw new CustomException(ANNOUNCEMENT_MAKE_CODE_ERROR);
         }
+    }
+
+    public List<Announcement> getAllAnnouncementList() {
+        return announcementRepository.findAll();
     }
 }

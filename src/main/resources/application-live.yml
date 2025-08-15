@@ -33,6 +33,9 @@ spring:
     suggestion-webhook: ${DISCORD_SUGGESTION_WEBHOOK} # 개선 제안용 웹훅
     leave-webhook: ${DISCORD_LEAVE_WEBHOOK}           # 탈퇴 사유용 웹훅
     app-icon: ${APP_ICON}                             # 앱 아이콘
+  admin:
+    admin-email: ${ADMIN_EMAIL}
+    admin-password: ${ADMIN_PASSWORD}
 logging:
   level:
     root: info

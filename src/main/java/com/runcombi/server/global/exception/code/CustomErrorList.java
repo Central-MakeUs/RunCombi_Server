@@ -56,7 +56,10 @@ public enum CustomErrorList implements CustomErrorCode{
 
     // Announcement
     ANNOUNCEMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "ANNOUNCEMENT0001", "해당 공지사항 및 이벤트를 찾을 수 없습니다."),
-    ANNOUNCEMENT_MAKE_CODE_ERROR(HttpStatus.BAD_REQUEST, "ANNOUNCEMENT0002", "이벤트 CODE 생성 중 오류가 발생하였습니다.");
+    ANNOUNCEMENT_MAKE_CODE_ERROR(HttpStatus.BAD_REQUEST, "ANNOUNCEMENT0002", "이벤트 CODE 생성 중 오류가 발생하였습니다."),
+
+    // Admin
+    ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "ADMIN0001", "올바르지 않은 관리자 정보입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
