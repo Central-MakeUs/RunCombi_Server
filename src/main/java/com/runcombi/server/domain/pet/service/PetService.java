@@ -31,6 +31,7 @@ public class PetService {
         return petRepository.findAllByMember(member);
     }
 
+
     public Pet setPetDetail(Member member, SetPetDetailDto petDetail) {
         Pet pet = new Pet();
         pet.setPetDetail(petDetail);
@@ -71,6 +72,8 @@ public class PetService {
 
         if(member.getPets().size() == 2) throw new CustomException(PET_COUNT_EXCEEDED);
         Pet pet = setPetDetail(member, petDetail);
+        petRepository.save(pet);
+        
         if(petImage != null) {
             S3ImageReturnDto petImageReturnDto = s3Service.uploadPetImage(petImage, pet.getPetId());
             setPetImage(pet, petImageReturnDto);
