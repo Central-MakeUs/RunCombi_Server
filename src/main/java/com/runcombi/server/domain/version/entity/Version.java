@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.version.entity;
 
+import com.runcombi.server.domain.version.dto.RequestVersionDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +21,9 @@ public class Version {
     private OS os;
 
     private String version;
+
+    public void updateVersion(RequestVersionDto requestVersionDto) {
+        this.os = requestVersionDto.getOs();
+        this.version = requestVersionDto.getVersion();
+    }
 }

@@ -1,8 +1,10 @@
 package com.runcombi.server.domain.version.service;
 
+import com.runcombi.server.domain.version.dto.RequestVersionDto;
 import com.runcombi.server.domain.version.entity.OS;
 import com.runcombi.server.domain.version.entity.Version;
 import com.runcombi.server.domain.version.repository.VersionRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,9 +67,6 @@ public class VersionService {
         return 0;
     }
 
-    // 버전 정보를 정수형 배열로 분리
-    // ex) 1.3.2 -> [1,3,2]
-
     /**
      * 문자열의 버전 정보를 정수 배열로 분리해줍니다.
      * ex) 1.3.2 -> [1,3,2]
@@ -78,5 +77,43 @@ public class VersionService {
         return Arrays.stream(version.split("\\."))
                 .mapToInt(Integer::parseInt)
                 .toArray();
+    }
+
+    public HashMap<String, String> getVersion() {
+        Optional<Version> optionaliOS = versionRepository.findByOs(OS.iOS);
+        Optional<Version> optionalAndroid = versionRepository.findByOs(OS.Android);
+        HashMap<String, String> result = new HashMap<>();
+
+        if(optionaliOS.isEmpty()) {
+            result.put("iOS", "최소 버전 없음");
+        }else {
+            result.put("iOS", optionaliOS.get().getVersion());
+        }
+
+        if(optionalAndroid.isEmpty()) {
+            result.put("Android", "최소 버전 없음");
+        }else {
+            result.put("Android", optionalAndroid.get().getVersion());
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public void updateVersion(RequestVersionDto requestVersionDto) {
+        Optional<Version> optionalVersion = versionRepository.findByOs(requestVersionDto.getOs());
+        if(optionalVersion.isEmpty()) {
+            // 저장된 버전 정보가 없는 경우
+            versionRepository.save(
+                    Version.builder()
+                            .os(requestVersionDto.getOs())
+                            .version(requestVersionDto.getVersion()).build()
+            );
+        }else {
+            // 저장된 버전 정보가 존재하는 경우
+            Version version = optionalVersion.get();
+            version.updateVersion(requestVersionDto);
+            versionRepository.save(version);
+        }
     }
 }
