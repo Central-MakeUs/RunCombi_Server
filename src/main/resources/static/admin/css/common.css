@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 50px;
+    min-height: 50px;
 }
 
 .logo {
@@ -35,14 +35,17 @@
 .menu {
     list-style: none;
     display: flex;
+    flex-wrap: wrap; /* 다수 항목 시 자연스럽게 여러 줄 배치 */
 }
 
 .menu li a {
     color: #D7FE63;
     text-decoration: none;
-    padding: 0 1em;
+    padding: 0 0.75em; /* 여백 줄이기 */
     line-height: 50px;
+    font-size: 0.95em; /* 글자 크기 조절 */
     transition: background-color 0.3s;
+    white-space: nowrap; /* 줄 바꿈 방지, 필요시 제거 가능 */
 }
 
 .menu li a:hover {

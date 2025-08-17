@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.announcement.service;
 
 import com.runcombi.server.domain.announcement.dto.RequestAddAnnouncementDto;
+import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
 import com.runcombi.server.domain.announcement.dto.ResponseAnnouncementDetailDto;
 import com.runcombi.server.domain.announcement.dto.ResponseAnnouncementDto;
 import com.runcombi.server.domain.announcement.entity.*;
@@ -18,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.runcombi.server.global.exception.code.CustomErrorList.*;
 
@@ -157,5 +156,33 @@ public class AnnouncementService {
 
     public List<Announcement> getAllAnnouncementList() {
         return announcementRepository.findAll();
+    }
+
+    public HashMap<String, String> getAnnouncementDetail(Long announcementId) {
+        Announcement announcement = announcementRepository.findById(announcementId).orElseThrow(() -> new CustomException(ANNOUNCEMENT_NOT_FOUND));
+        AnnouncementDetail announcementDetail = announcement.getAnnouncementDetail();
+        HashMap<String, String> returnAnnouncementDetail = new HashMap<>();
+
+        returnAnnouncementDetail.put("announcementId", announcement.getAnnouncementId().toString());
+        returnAnnouncementDetail.put("announcementType", announcement.getAnnouncementType().toString());
+        returnAnnouncementDetail.put("display", announcement.getDisplay().toString());
+        returnAnnouncementDetail.put("title", announcement.getTitle());
+        returnAnnouncementDetail.put("content", announcementDetail.getContent());
+        returnAnnouncementDetail.put("startDate", announcement.getStartDate().toString());
+        returnAnnouncementDetail.put("endDate", announcement.getEndDate().toString());
+        returnAnnouncementDetail.put("announcementImageUrl", announcementDetail.getAnnouncementImageUrl());
+        returnAnnouncementDetail.put("eventApplyUrl", announcementDetail.getEventApplyUrl());
+
+        return returnAnnouncementDetail;
+    }
+
+    @Transactional
+    public void updateAnnouncement(RequestUpdateAnnouncementDto requestUpdateAnnouncementDto) {
+        Announcement announcement = announcementRepository.findById(requestUpdateAnnouncementDto.getAnnouncementId()).orElseThrow(() -> new CustomException(ANNOUNCEMENT_NOT_FOUND));
+        AnnouncementDetail announcementDetail = announcement.getAnnouncementDetail();
+        announcement.updateAnnouncement(requestUpdateAnnouncementDto);
+        announcementDetail.updateAnnouncementDetail(requestUpdateAnnouncementDto);
+        announcementDetailRepository.save(announcementDetail);
+        announcementRepository.save(announcement);
     }
 }

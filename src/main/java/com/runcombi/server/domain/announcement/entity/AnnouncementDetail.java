@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.announcement.entity;
 
+import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
 import com.runcombi.server.domain.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,10 @@ public class AnnouncementDetail extends BaseTimeEntity {
     private String content; // 세부 글
     private String announcementImageUrl; // 공지, 이벤트 이미지 URL
     private String eventApplyUrl; // 이벤트 응모 페이지 URL
+
+    public void updateAnnouncementDetail(RequestUpdateAnnouncementDto requestUpdateAnnouncementDto) {
+        this.content = requestUpdateAnnouncementDto.getContent();
+        this.announcementImageUrl = requestUpdateAnnouncementDto.getAnnouncementImageUrl();
+        this.eventApplyUrl = requestUpdateAnnouncementDto.getEventApplyUrl();
+    }
 }

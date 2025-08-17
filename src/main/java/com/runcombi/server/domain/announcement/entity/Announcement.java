@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.announcement.entity;
 
+import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
 import com.runcombi.server.domain.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,5 +43,12 @@ public class Announcement extends BaseTimeEntity {
     public void addAnnouncementView(AnnouncementView announcementView) {
         this.announcementViewList.add(announcementView);
         announcementView.setAnnouncement(this);
+    }
+
+    public void updateAnnouncement(RequestUpdateAnnouncementDto requestUpdateAnnouncementDto) {
+        this.display = requestUpdateAnnouncementDto.getDisplay();
+        this.title = requestUpdateAnnouncementDto.getTitle();
+        this.startDate = requestUpdateAnnouncementDto.getStartDate();
+        this.endDate = requestUpdateAnnouncementDto.getEndDate();
     }
 }

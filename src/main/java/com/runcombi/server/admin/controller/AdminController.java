@@ -6,12 +6,15 @@ import com.runcombi.server.domain.announcement.service.AnnouncementService;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.Role;
 import com.runcombi.server.domain.member.repository.MemberRepository;
+import com.runcombi.server.domain.version.service.VersionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -21,6 +24,7 @@ public class AdminController {
 
     private final AnnouncementService announcementService;
     private final MemberRepository memberRepository;
+    private final VersionService versionService;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -44,5 +48,20 @@ public class AdminController {
         List<Member> memberList = memberRepository.findByRole(Role.USER);
         model.addAttribute("memberList", memberList);
         return "admin/member";
+    }
+
+    @GetMapping("/version")
+    public String versionPage(Model model) {
+        HashMap<String, String> version = versionService.getVersion();
+        model.addAttribute("version", version);
+        return "admin/version";
+    }
+
+    @GetMapping("/updateAnnouncement/{id}")
+    public String updateAnnouncementPage(@PathVariable("id") Long announcementId, Model model) {
+        HashMap<String, String> announcementDetail = announcementService.getAnnouncementDetail(announcementId);
+        model.addAttribute("announcementDetail", announcementDetail);
+
+        return "admin/updateAnnouncement";
     }
 }
