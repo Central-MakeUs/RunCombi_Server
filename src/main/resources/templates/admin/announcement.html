@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,8 +55,8 @@
                             <label>종료일</label>
                             <input type="date" id="endDate" name="endDate" />
                         </div>
-                        <div class="form-group event-group" style="display:none;">
-                            <label>공지사항 · 이벤트</label>
+                        <div class="form-group common-group">
+                            <label>공지사항 · 이벤트 이미지 URL</label>
                             <input type="text" id="announcementImageUrl" name="announcementImageUrl" />
                         </div>
                         <div class="form-group event-group" style="display:none;">
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="detail-box">
-                <button type="button" class="toggle-btn delete-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 삭제</button>
+                <button type="button" class="toggle-btn delete-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 수정, 삭제</button>
                 <div class="event-list-section" style="display:none; overflow-x: auto;">
                     <table border="1" cellpadding="10">
                         <thead>
@@ -78,6 +78,7 @@
                             <th>TYPE</th>
                             <th>제목</th>
                             <th>작성일</th>
+                            <th>수정</th>
                             <th>삭제</th>
                         </tr>
                         </thead>
@@ -88,6 +89,9 @@
                             <td th:text="${announcement.title}">제목</td>
                             <td th:text="${#strings.substring(announcement.regDate, 0, 10)}">등록일</td>
                             <td>
+                                <button onclick="updateAnnouncement(this)">수정</button>
+                            </td>
+                            <td>
                                 <button onclick="deleteAnnouncement(this)">삭제</button>
                             </td>
                         </tr>
@@ -95,7 +99,7 @@
                     </table>
                 </div>
             </div>
-            <!--<div class="detail-box">내용 3번입니다.</div>-->
+            <!--<div class="detail-box">추가 항목</div>-->
         </div>
     </main>
 
@@ -129,13 +133,25 @@
           let data = {};
 
           if(type === "NOTICE") {
-              data = {
-                  announcementType: type,
-                  display: display,
-                  title: title,
-                  content: content,
-                  startDate: "1000-01-01",
-                  endDate: "9999-12-31"
+              if(announcementImageUrl === ""){
+                  data = {
+                      announcementType: type,
+                      display: display,
+                      title: title,
+                      content: content,
+                      startDate: "1000-01-01",
+                      endDate: "9999-12-31"
+                  }
+              }else {
+                  data = {
+                      announcementType: type,
+                      display: display,
+                      title: title,
+                      content: content,
+                      announcementImageUrl: announcementImageUrl,
+                      startDate: "1000-01-01",
+                      endDate: "9999-12-31"
+                  }
               }
           }else if(type === "EVENT") {
               // 날짜 선택 validate
@@ -244,6 +260,14 @@
                     }
                 });
             }
+        }
+
+        function updateAnnouncement(btn) {
+            const row = btn.closest('tr'); // 버튼이 속한 <tr> 찾기
+            const tds = row.querySelectorAll('td');
+            const id = tds[0].innerText; // 첫번째 td는 id
+
+            location.href = "/admin/updateAnnouncement/" + id;
         }
     </script>
 </body>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,6 +24,7 @@
                             <th>EMAIL</th>
                             <th>닉네임</th>
                             <th>생성일</th>
+                            <th>상태</th>
                             <th>삭제</th>
                         </tr>
                         </thead>
@@ -34,6 +35,7 @@
                             <td th:text="${member.email}">EMAIL</td>
                             <td th:text="${member.nickname}">닉네임</td>
                             <td th:text="${#strings.substring(member.regDate, 0, 10)}">생성일</td>
+                            <td th:text="${member.isActive}">상태</td>
                             <td>
                                 <button onclick="deleteMember(this)">삭제</button>
                             </td>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <title>공지 수정</title>
+</head>
+<body>
+    <div th:insert="admin/fragments/navbar :: navbar"></div>
+    <main class="content">
+        <h1>공지 수정</h1>
+        <div class="box">
+            <div class="form-section" style="overflow-x: auto;">
+                <form id="announcementForm" onsubmit="return submitForm();" style="margin-top: 10px">
+                    <!-- 공지/이벤트 선택 -->
+                    <div style="margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label>공지 ID</label>
+                            <input type="text" id="announcementId" th:value="${announcementDetail.announcementId}" readonly />
+                        </div>
+                        <label>공지 종류</label><br>
+                        <label>
+                            <input type="radio" checked />
+                            <span id="type" th:text="${announcementDetail.announcementType == 'NOTICE'} ? '공지사항' : '이벤트'">공지사항</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label>노출 여부</label><br>
+                        <label>
+                            <input type="radio" name="display" value="Y" th:checked="${announcementDetail.display == 'Y'}" /> 노출
+                        </label>
+                        <label>
+                            <input type="radio" name="display" value="N" th:checked="${announcementDetail.display == 'N'}" /> 미노출
+                        </label>
+                    </div>
+                    <!-- 공통으로 보여줄 항목 -->
+                    <div class="form-group">
+                        <label>제목</label>
+                        <input type="text" id="title" name="title" th:value="${announcementDetail.title}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>내용</label>
+                        <textarea id="content" name="content" rows="5" th:text="${announcementDetail.content}" required></textarea>
+                    </div>
+
+                    <!-- 이벤트 전용 항목들 (처음에는 숨김) -->
+                    <div class="form-group event-group" th:hidden="${announcementDetail.announcementType == 'NOTICE'}" >
+                        <label>시작일</label>
+                        <input type="date" id="startDate" name="startDate" th:value="${announcementDetail.startDate}" />
+                    </div>
+                    <div class="form-group event-group" th:hidden="${announcementDetail.announcementType == 'NOTICE'}" >
+                        <label>종료일</label>
+                        <input type="date" id="endDate" name="endDate" th:value="${announcementDetail.endDate}" />
+                    </div>
+                    <div class="form-group">
+                        <label>공지사항 · 이벤트 이미지 URL</label>
+                        <input type="text" id="announcementImageUrl" name="announcementImageUrl" th:value="${announcementDetail.announcementImageUrl}" onblur="changeImage(this.value)" />
+
+                        <!-- announcementImageUrl 값이 null 아니고 빈 문자열이 아닐 때만 img 태그 보여주기 -->
+                        <div class="imgViewDiv" th:hidden="${announcementDetail.announcementImageUrl == null}">
+                            <label style="margin-top:10px; text-align: center;">⬇️ 이미지 ⬇️</label>
+                            <img
+                                 th:src="${announcementDetail.announcementImageUrl}"
+                                 class="announcementImage"
+                                 alt="이벤트 이미지" style="margin-top:10px; width:100%;"/>
+                        </div>
+                    </div>
+                    <div class="form-group event-group" th:hidden="${announcementDetail.announcementType == 'NOTICE'}" >
+                        <label>이벤트 참여 URL</label>
+                        <input type="text" id="eventApplyUrl" name="eventApplyUrl" th:value="${announcementDetail.eventApplyUrl}" />
+                    </div>
+                    <button type="submit">수정</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+
+<script>
+    function changeImage(imageUrl) {
+        const imgViewDiv = document.querySelector('.imgViewDiv');
+        const imgTag = document.querySelector('.announcementImage');
+
+        if(imageUrl !== "") {
+            imgViewDiv.hidden = false;
+            imgTag.src = imageUrl;
+        }else {
+            imgViewDiv.hidden = true;
+        }
+    }
+
+    function submitForm() {
+        // 폼 데이터 수집
+        const announcementId = document.getElementById('announcementId').value;
+        const type = document.getElementById('type').innerText;
+        const display = document.querySelector('input[name="display"]:checked').value;
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const announcementImageUrl = document.getElementById('announcementImageUrl').value;
+        const eventApplyUrl = document.getElementById('eventApplyUrl').value;
+
+        if(title === "" || content === "") {
+            alert("제목 및 내용은 필수 입력입니다.");
+            return false;
+        }
+
+        let data = {};
+
+        if(type === "공지사항") {
+            if(announcementImageUrl === ""){
+                data = {
+                    announcementId: announcementId,
+                    announcementType: type,
+                    display: display,
+                    title: title,
+                    content: content,
+                    startDate: "1000-01-01",
+                    endDate: "9999-12-31"
+                }
+            }else {
+                data = {
+                    announcementId: announcementId,
+                    announcementType: type,
+                    display: display,
+                    title: title,
+                    content: content,
+                    announcementImageUrl: announcementImageUrl,
+                    startDate: "1000-01-01",
+                    endDate: "9999-12-31"
+                }
+            }
+        }else if(type === "이벤트") {
+            // 날짜 선택 validate
+            if(startDate === "" || endDate === "") {
+                alert("이벤트 날짜 선택은 필수입니다.");
+                return false;
+            }
+
+            if(announcementImageUrl === "" && eventApplyUrl === "") {
+                data = {
+                    announcementId: announcementId,
+                    announcementType: type,
+                    display: display,
+                    title: title,
+                    content: content,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            }else if(announcementImageUrl === "") {
+                data = {
+                    announcementId: announcementId,
+                    announcementType: type,
+                    display: display,
+                    title: title,
+                    content: content,
+                    startDate: startDate,
+                    endDate: endDate,
+                    eventApplyUrl: eventApplyUrl
+                }
+            }else if(eventApplyUrl === "") {
+                data = {
+                    announcementId: announcementId,
+                    announcementType: type,
+                    display: display,
+                    title: title,
+                    content: content,
+                    startDate: startDate,
+                    endDate: endDate,
+                    announcementImageUrl: announcementImageUrl
+                }
+            }
+        }
+
+        // 공지, 이벤트 등록
+        fetch('/admin/updateAnnouncement', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if(res.ok) {
+                alert('수정 성공');
+                location.reload();
+            } else {
+                alert('에러 발생');
+                location.href = "/admin/announcement";
+            }
+        });
+
+        return false; // 폼 기본 제출 방지
+    }
+</script>
+</html>
