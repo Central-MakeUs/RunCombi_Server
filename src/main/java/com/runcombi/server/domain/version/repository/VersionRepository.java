@@ -4,6 +4,7 @@ import com.runcombi.server.domain.version.entity.OS;
 import com.runcombi.server.domain.version.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface VersionRepository extends JpaRepository<Version, Long> {
@@ -15,5 +16,5 @@ public interface VersionRepository extends JpaRepository<Version, Long> {
      */
     Optional<Version> findTopByOsOrderByVersionIdDesc(OS os);
 
-    Optional<Version> findByOs(OS os);
+    List<Version> findAllByOs(OS os);
 }

@@ -8,10 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -80,8 +77,8 @@ public class VersionService {
     }
 
     public HashMap<String, String> getVersion() {
-        Optional<Version> optionaliOS = versionRepository.findByOs(OS.iOS);
-        Optional<Version> optionalAndroid = versionRepository.findByOs(OS.Android);
+        Optional<Version> optionaliOS = versionRepository.findTopByOsOrderByVersionIdDesc(OS.iOS);
+        Optional<Version> optionalAndroid = versionRepository.findTopByOsOrderByVersionIdDesc(OS.Android);
         HashMap<String, String> result = new HashMap<>();
 
         if(optionaliOS.isEmpty()) {
@@ -101,7 +98,7 @@ public class VersionService {
 
     @Transactional
     public void updateVersion(RequestVersionDto requestVersionDto) {
-        Optional<Version> optionalVersion = versionRepository.findByOs(requestVersionDto.getOs());
+        /*Optional<Version> optionalVersion = versionRepository.findByOs(requestVersionDto.getOs());
         if(optionalVersion.isEmpty()) {
             // 저장된 버전 정보가 없는 경우
             versionRepository.save(
@@ -114,6 +111,17 @@ public class VersionService {
             Version version = optionalVersion.get();
             version.updateVersion(requestVersionDto);
             versionRepository.save(version);
-        }
+        }*/
+        Version version = versionRepository.save(
+                Version.builder()
+                        .os(requestVersionDto.getOs())
+                        .version(requestVersionDto.getVersion())
+                        .updateDetail(requestVersionDto.getUpdateDetail())
+                        .build()
+        );
+    }
+
+    public List<Version> getVersionHistory(OS os) {
+        return versionRepository.findAllByOs(os);
     }
 }
