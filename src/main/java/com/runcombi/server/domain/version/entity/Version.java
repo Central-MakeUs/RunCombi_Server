@@ -1,5 +1,6 @@
 package com.runcombi.server.domain.version.entity;
 
+import com.runcombi.server.domain.base.BaseTimeEntity;
 import com.runcombi.server.domain.version.dto.RequestVersionDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Version {
+public class Version extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long versionId;
@@ -21,6 +22,8 @@ public class Version {
     private OS os;
 
     private String version;
+
+    private String updateDetail;    // 변경 사항
 
     public void updateVersion(RequestVersionDto requestVersionDto) {
         this.os = requestVersionDto.getOs();

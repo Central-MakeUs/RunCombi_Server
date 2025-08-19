@@ -41,8 +41,63 @@
                     <label>
                         <input type="text" id="version" />
                     </label>
+                    <label style="margin-top: 15px">변경 사항</label>
+                    <label>
+                        <textarea id="updateDetail" rows="5" required></textarea>
+                    </label>
                 </div>
                 <button onclick="updateVersion()">수정</button>
+            </div>
+            <hr style="margin: 30px 0;">
+            <div class="detail-box" style="overflow-x: auto;">
+                <div style="overflow-x: auto;">
+                    <h3 style="text-align: center">iOS 버전 변경 내역</h3>
+                    <table border="1" cellpadding="10">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>OS</th>
+                            <th>변경 사항</th>
+                            <th>변경 일자</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="version : ${iOSVersionList}">
+                            <td th:text="${version.versionId}">ID</td>
+                            <td th:text="${version.os}">OS</td>
+                            <td style="padding: 5px 10px 5px 5px;">
+                                <textarea style="width: 100%; background: #222; color: #D7FE63; resize: none" rows="5" th:text="${version.updateDetail}" readonly></textarea>
+                            </td>
+                            <td th:text="${#strings.substring(version.regDate, 0, 10)}">변경 일자</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="detail-box">
+                <div style="overflow-x: auto;">
+                    <h3 style="text-align: center">Android 버전 변경 내역</h3>
+                    <table border="1" cellpadding="10">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>OS</th>
+                                <th>변경 사항</th>
+                                <th>변경 일자</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="version : ${AndroidVersionList}">
+                                <td th:text="${version.versionId}">ID</td>
+                                <td th:text="${version.os}">OS</td>
+                                <td style="padding: 5px 10px 5px 5px;">
+                                    <textarea style="width: 100%; background: #222; color: #D7FE63; resize: none" rows="5" th:text="${version.updateDetail}" readonly></textarea>
+                                </td>
+                                <td th:text="${#strings.substring(version.regDate, 0, 10)}">변경 일자</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -51,6 +106,7 @@
         function updateVersion() {
             const os = document.getElementById('OS').value;
             const version = document.getElementById('version').value;
+            const updateDetail = document.getElementById('updateDetail').value;
 
             if(version === "") {
                 alert("버전 정보는 필수 입력 항목입니다.")
@@ -59,14 +115,18 @@
                 // 버전 유효성 체크 ( 0 ~ 9 까지 숫자와 . 만 입력 가능 )
                 alert("올바른 버전 정보가 아닙니다.\n입력한 버전 정보 : '" + version +"'")
                 return;
+            }else if(updateDetail === "") {
+                alert("버전 변경 사항은 필수 입력 항목입니다.")
+                return;
             }
 
             data = {
                 os : os,
-                version : version
+                version : version,
+                updateDetail : updateDetail
             }
 
-            if (confirm('OS: ' + OS + '\nversion: ' + version + '\n' + "위 버전으로 변경하시겠습니까?")) {
+            if (confirm('OS: ' + os + '\nversion: ' + version + '\n' + "위 버전으로 변경하시겠습니까?")) {
                 // 버전 변경
                 fetch('/admin/updateVersion', {
                     method: 'POST',

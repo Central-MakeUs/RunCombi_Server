@@ -6,6 +6,8 @@ import com.runcombi.server.domain.announcement.service.AnnouncementService;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.Role;
 import com.runcombi.server.domain.member.repository.MemberRepository;
+import com.runcombi.server.domain.version.entity.OS;
+import com.runcombi.server.domain.version.entity.Version;
 import com.runcombi.server.domain.version.service.VersionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -54,6 +56,8 @@ public class AdminController {
     public String versionPage(Model model) {
         HashMap<String, String> version = versionService.getVersion();
         model.addAttribute("version", version);
+        model.addAttribute("iOSVersionList", versionService.getVersionHistory(OS.iOS));
+        model.addAttribute("AndroidVersionList", versionService.getVersionHistory(OS.Android));
         return "admin/version";
     }
 

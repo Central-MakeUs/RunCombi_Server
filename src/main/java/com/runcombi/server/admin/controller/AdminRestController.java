@@ -64,8 +64,10 @@ public class AdminRestController {
     public ApiResponse<String> deleteMember(
             @RequestBody RequestVersionDto requestVersionDto
     ) {
+        System.out.println(requestVersionDto.getUpdateDetail());
         versionService.updateVersion(requestVersionDto);
 
-        return ApiResponse.onSuccess("삭제에 성공하였습니다.");
+
+        return ApiResponse.onSuccess("버전 변경에 성공하였습니다.");
     }
 }
