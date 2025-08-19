@@ -122,6 +122,6 @@ public class VersionService {
     }
 
     public List<Version> getVersionHistory(OS os) {
-        return versionRepository.findAllByOs(os);
+        return versionRepository.findAllByOsOrderByVersionIdDesc(os);
     }
 }

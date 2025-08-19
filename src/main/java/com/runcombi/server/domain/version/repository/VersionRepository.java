@@ -16,5 +16,5 @@ public interface VersionRepository extends JpaRepository<Version, Long> {
      */
     Optional<Version> findTopByOsOrderByVersionIdDesc(OS os);
 
-    List<Version> findAllByOs(OS os);
+    List<Version> findAllByOsOrderByVersionIdDesc(OS os);
 }
