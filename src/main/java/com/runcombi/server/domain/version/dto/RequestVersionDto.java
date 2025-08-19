@@ -7,4 +7,5 @@ import lombok.Getter;
 public class RequestVersionDto {
     private OS os;
     private String version;
+    private String updateDetail;
 }
