@@ -61,6 +61,13 @@ public class AdminController {
         return "admin/version";
     }
 
+    @GetMapping("/event")
+    public String eventPage(Model model) {
+        List<Announcement> eventList = announcementService.getEventList();
+        model.addAttribute("eventList", eventList);
+        return "admin/event";
+    }
+
     @GetMapping("/updateAnnouncement/{id}")
     public String updateAnnouncementPage(@PathVariable("id") Long announcementId, Model model) {
         HashMap<String, String> announcementDetail = announcementService.getAnnouncementDetail(announcementId);

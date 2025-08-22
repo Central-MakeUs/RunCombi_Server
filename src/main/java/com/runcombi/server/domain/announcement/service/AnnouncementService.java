@@ -185,4 +185,8 @@ public class AnnouncementService {
         announcementDetailRepository.save(announcementDetail);
         announcementRepository.save(announcement);
     }
+
+    public List<Announcement> getEventList() {
+        return announcementRepository.findAllByAnnouncementTypeOrderByAnnouncementIdDesc(AnnouncementType.EVENT);
+    }
 }
