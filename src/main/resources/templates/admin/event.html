@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <title>버전 관리</title>
+</head>
+<body>
+<!-- 공통 네비게이션 바 호출 -->
+    <div th:insert="admin/fragments/navbar :: navbar"></div>
+
+    <main class="content">
+        <h1>이벤트 관리</h1>
+        <div class="box">
+            <div class="detail-box" style="overflow-x: auto;">
+                <div style="overflow-x: auto;">
+                    <h3 style="text-align: center">이벤트 내역</h3>
+                    <table border="1" cellpadding="10">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 40%;">제목</th>
+                                <th style="width: 20%;">시작일</th>
+                                <th style="width: 20%;">종료일</th>
+                                <th style="width: 10%;">상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="event : ${eventList}">
+                                <td th:text="${event.announcementId}">ID</td>
+                                <td th:text="${event.title}">제목</td>
+                                <td th:text="${event.startDate}">시작일</td>
+                                <td th:text="${event.endDate}">종료일</td>
+                                <td>
+                                    <button onclick="moveEventDetail(this)">보기</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- dim과 팝업 박스 -->
+    <div id="modalDim" class="modalDim" style="display:none;"></div>
+    <div id="popupContainer" class="popupContainer" style="display:none;">
+        <div class="popupContent">
+            <button onclick="closePopup()">닫기</button>
+            <div id="popupDetails">여기에 상세 내용이 들어갑니다.</div>
+        </div>
+    </div>
+
+    <script>
+        function moveEventDetail(el) {
+            const row = el.closest('tr'); // 버튼이 속한 <tr> 찾기
+            const tds = row.querySelectorAll('td');
+
+            const id = tds[0].innerText; // 첫번째 td는 id
+
+            const detailHtml = `
+                <p><strong>ID:</strong> ${id}</p>
+                <p>상세 내용 넣을 부분</p>
+            `;
+
+            showPopup(detailHtml);
+        }
+
+        function showPopup(content) {
+            document.getElementById('popupDetails').innerHTML = content;
+            document.getElementById('modalDim').style.display = 'block';
+            document.getElementById('popupContainer').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('modalDim').style.display = 'none';
+            document.getElementById('popupContainer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
