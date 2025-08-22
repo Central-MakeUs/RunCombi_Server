@@ -1,6 +1,7 @@
 package com.runcombi.server.domain.announcement.repository;
 
 import com.runcombi.server.domain.announcement.entity.Announcement;
+import com.runcombi.server.domain.announcement.entity.AnnouncementType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,4 +12,6 @@ import java.util.List;
 public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
     @Query("SELECT a FROM Announcement a WHERE a.display = 'Y' AND :today BETWEEN a.startDate AND a.endDate ORDER BY a.regDate DESC")
     List<Announcement> findActiveAnnouncementList(@Param("today") LocalDate today);
+
+    List<Announcement> findAllByAnnouncementTypeOrderByAnnouncementIdDesc(AnnouncementType announcementType);
 }
