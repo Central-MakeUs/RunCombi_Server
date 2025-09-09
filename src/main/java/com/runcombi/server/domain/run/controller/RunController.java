@@ -27,6 +27,16 @@ public class RunController {
         return ApiResponse.onSuccess(responseStartRunDto);
     }
 
+    @PostMapping("/run/midRunUpdate")
+    public ApiResponse<String> midProgressUpdate(
+            @AuthenticationPrincipal Member member,
+            @RequestBody RequestMidRunUpdateDto requestMidRunUpdateDto
+    ) {
+        runService.midRunUpdate(member, requestMidRunUpdateDto);
+
+        return ApiResponse.onSuccess("산책 정보 중간 저장에 성공했습니다.");
+    }
+
     @PostMapping("/run/endRun")
     public ApiResponse<String> endRun(
             @AuthenticationPrincipal Member member,

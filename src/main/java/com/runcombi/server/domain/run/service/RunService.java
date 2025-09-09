@@ -6,10 +6,7 @@ import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.pet.entity.Pet;
 import com.runcombi.server.domain.pet.entity.RunStyle;
 import com.runcombi.server.domain.pet.repository.PetRepository;
-import com.runcombi.server.domain.run.dto.PetCalDto;
-import com.runcombi.server.domain.run.dto.RequestEndMemberRunDto;
-import com.runcombi.server.domain.run.dto.RequestEndPetRunDto;
-import com.runcombi.server.domain.run.dto.ResponseStartRunDto;
+import com.runcombi.server.domain.run.dto.*;
 import com.runcombi.server.domain.run.entity.Run;
 import com.runcombi.server.domain.run.entity.RunPet;
 import com.runcombi.server.domain.run.repository.RunPetRepository;
@@ -151,6 +148,35 @@ public class RunService {
             Pet pet = petRepository.findByPetId(petCalDto.getPetId());
             RunPet runPet = runPetRepository.findByRunAndPet(run, pet).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
             runPet.updateCal(getPetCal(pet.getRunStyle(), pet.getWeight(), memberRunData.getRunDistance()));
+            runPetRepository.save(runPet);
+        }
+    }
+
+    /**
+     * 운동 상황을 일정 시간마다 저장할때 사용되는 메소드
+     * @param contextMember
+     * @param requestMidRunUpdateDto
+     * @return
+     */
+    public void midRunUpdate(Member contextMember, RequestMidRunUpdateDto requestMidRunUpdateDto) {
+        Member member = memberRepository.findByMemberId(contextMember.getMemberId());
+
+        // 해당 runId 가 없는 경우 RUN_ID_INVALID 예외 발생
+        Run run = runRepository.findById(requestMidRunUpdateDto.getRunId()).orElseThrow(() -> new CustomException(RUN_ID_INVALID));
+        // runId 와 memberId 가 일치하지 않는 경우 RUN_ID_INVALID 에외 발생
+        if(run.getMember() != member) throw new CustomException(RUN_ID_INVALID);
+
+        run.updateRun(
+                getMemberCal(member.getGender(), run.getMemberRunStyle(), member.getWeight(), requestMidRunUpdateDto.getRunDistance()),
+                requestMidRunUpdateDto.getRunTime(),
+                requestMidRunUpdateDto.getRunDistance()
+        );
+        runRepository.save(run);
+
+        List<RunPet> runPets = run.getRunPets();
+        for(RunPet runPet : runPets) {
+            Pet pet = runPet.getPet();
+            runPet.updateCal(getPetCal(pet.getRunStyle(), pet.getWeight(), requestMidRunUpdateDto.getRunDistance()));
             runPetRepository.save(runPet);
         }
     }
