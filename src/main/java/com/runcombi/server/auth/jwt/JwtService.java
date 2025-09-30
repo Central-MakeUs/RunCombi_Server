@@ -26,7 +26,8 @@ public class JwtService {
     private String SECRET_KEY;
     private final UserDetailServiceImpl userDetailService;
 
-    private Long accessTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 7일
+    private Long accessTokenExpireTime = 1000L * 30; // 30초 테스트
+    // private Long accessTokenExpireTime = 1000L * 60 * 60 * 24 * 7; // 7일
     private Long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 30; // 30일
 
     public String validateToken(String token) {
