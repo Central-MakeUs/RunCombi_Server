@@ -5,7 +5,6 @@ import com.runcombi.server.admin.security.AdminUserDetailsServiceImpl;
 import com.runcombi.server.auth.jwt.JwtAuthenticationFilter;
 import com.runcombi.server.auth.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -18,8 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -50,7 +47,7 @@ public class SecurityConfig {
         // 관리자는 FormLogin 기반
         http
                 .authenticationProvider(adminAuthenticationProvider())
-                .securityMatcher("/admin/**") // admin 경로에만 적용
+                .securityMatcher("/admin", "/admin/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs") // admin + swagger 경로에 적용
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // ADMIN은 세션 사용
@@ -72,7 +69,7 @@ public class SecurityConfig {
     @Order(0)
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
-      "/auth/apple/**",
+                "/auth/apple/**",
                 "/auth/kakao/**",
                 "/auth/refresh",
                 "/version/check",

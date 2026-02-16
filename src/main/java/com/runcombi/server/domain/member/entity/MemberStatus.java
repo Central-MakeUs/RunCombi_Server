@@ -1,5 +1,8 @@
 package com.runcombi.server.domain.member.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "회원 상태")
 public enum MemberStatus {
     LIVE,       // 활동 회원
     DELETE,     // 탈퇴 회원
