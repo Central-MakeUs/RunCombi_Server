@@ -17,6 +17,17 @@
             <div class="detail-box">
                 <button type="button" class="toggle-btn view-member section-toggle-btn">회원 목록 보기</button>
                 <div class="member-list-section hidden-section">
+                    <div class="member-search-box">
+                        <input
+                                type="text"
+                                id="memberSearchKeyword"
+                                class="member-search-input"
+                                placeholder="회원 ID, 이메일, 닉네임, 상태로 검색"
+                        />
+                        <button type="button" id="memberSearchBtn" class="member-search-btn">검색</button>
+                        <button type="button" id="memberSearchResetBtn" class="member-search-reset-btn">초기화</button>
+                    </div>
+                    <p id="memberSearchResult" class="member-search-result"></p>
                     <table border="1" cellpadding="10">
                         <thead>
                         <tr>
@@ -30,7 +41,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="member : ${memberList}">
+                        <tr th:each="member : ${memberList}" class="member-row" th:attr="data-member-id=${member.memberId}">
                             <td th:text="${member.memberId}">ID</td>
                             <td th:text="${member.provider}">PROVIDER</td>
                             <td th:text="${member.email}">EMAIL</td>
@@ -38,7 +49,7 @@
                             <td th:text="${#strings.substring(member.regDate, 0, 10)}">생성일</td>
                             <td th:text="${member.isActive}">상태</td>
                             <td>
-                                <button onclick="deleteMember(this)">삭제</button>
+                                <button type="button" class="delete-member-btn" onclick="deleteMember(this)">삭제</button>
                             </td>
                         </tr>
                         </tbody>
@@ -47,6 +58,38 @@
             </div>
         </div>
     </main>
+
+    <div id="memberDetailModalDim" class="member-modal-dim hidden-modal"></div>
+    <div id="memberDetailModal" class="member-modal hidden-modal" role="dialog" aria-modal="true" aria-labelledby="memberDetailModalTitle">
+        <div class="member-modal-header">
+            <h3 id="memberDetailModalTitle">회원 상세 정보</h3>
+            <button type="button" class="member-modal-close" onclick="closeMemberDetailModal()">닫기</button>
+        </div>
+        <div class="member-modal-body">
+            <div class="member-profile-area">
+                <div class="member-image-wrap">
+                    <img id="memberDetailImage" class="member-detail-image hidden-modal" alt="회원 프로필 이미지" />
+                    <div id="memberDetailImageEmpty" class="member-image-empty">이미지 없음</div>
+                </div>
+                <div class="member-info-grid">
+                    <div class="label">회원 ID</div><div id="memberDetailMemberId">-</div>
+                    <div class="label">이메일</div><div id="memberDetailEmail">-</div>
+                    <div class="label">닉네임</div><div id="memberDetailNickname">-</div>
+                    <div class="label">Provider</div><div id="memberDetailProvider">-</div>
+                    <div class="label">성별</div><div id="memberDetailGender">-</div>
+                    <div class="label">키</div><div id="memberDetailHeight">-</div>
+                    <div class="label">몸무게</div><div id="memberDetailWeight">-</div>
+                    <div class="label">상태</div><div id="memberDetailStatus">-</div>
+                    <div class="label">약관 동의</div><div id="memberDetailTerms">-</div>
+                </div>
+            </div>
+
+            <div class="member-pet-section">
+                <h4>반려견 정보</h4>
+                <div id="memberPetList" class="member-pet-list"></div>
+            </div>
+        </div>
+    </div>
 
     <script th:src="@{/admin/js/common.js}"></script>
     <script th:src="@{/admin/js/member.js}"></script>

@@ -7,6 +7,7 @@ import com.runcombi.server.domain.announcement.dto.RequestAddAnnouncementDto;
 import com.runcombi.server.domain.announcement.dto.RequestAnnouncementIdDto;
 import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
 import com.runcombi.server.domain.announcement.service.AnnouncementService;
+import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.RequestMemberIdDto;
 import com.runcombi.server.domain.member.service.MemberService;
 import com.runcombi.server.domain.version.dto.RequestVersionDto;
@@ -257,6 +258,74 @@ public class AdminRestController {
         memberService.deleteAccount(requestMemberIdDto.getMemberId());
 
         return ApiResponse.onSuccess("삭제에 성공하였습니다.");
+    }
+
+    @Operation(
+            summary = "관리자 회원 상세 조회",
+            description = "관리자가 회원 1명의 상세 정보를 조회합니다. 회원 기본 정보와 함께 최대 2마리의 반려견 정보를 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "member": {
+                                                  "memberId": 15,
+                                                  "provider": "KAKAO",
+                                                  "email": "user@runcombi.com",
+                                                  "nickname": "달리는몽이",
+                                                  "gender": "FEMALE",
+                                                  "height": 165.5,
+                                                  "weight": 54.2,
+                                                  "isActive": "LIVE",
+                                                  "profileImgUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/member/15xxx",
+                                                  "profileImgKey": "member/15xxx",
+                                                  "memberTerms": ["TERMS_OF_SERVICE", "PRIVACY_POLICY", "LOCATION_SERVICE_AGREEMENT"]
+                                                },
+                                                "petList": [
+                                                  {
+                                                    "petId": 21,
+                                                    "name": "몽이",
+                                                    "age": 4,
+                                                    "weight": 6.2,
+                                                    "runStyle": "WALKING",
+                                                    "petImageUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/pet/21xxx",
+                                                    "petImageKey": "pet/21xxx"
+                                                  }
+                                                ],
+                                                "memberStatus": "LIVE"
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음 (MEMBER0001)",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    name = "실패 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "MEMBER0001",
+                                              "message": "사용자가 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """
+                            )
+                    ))
+    })
+    @GetMapping("/member/detail")
+    public ApiResponse<GetMemberDetailDto> getMemberDetail(
+            @RequestParam Long memberId
+    ) {
+        return ApiResponse.onSuccess(memberService.getMemberDetailForAdmin(memberId));
     }
 
     @Operation(
