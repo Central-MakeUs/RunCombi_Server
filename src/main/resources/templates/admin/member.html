@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/admin/css/member.css}" />
     <title>회원 관리</title>
 </head>
 <body>
@@ -12,10 +13,10 @@
     <main class="content">
         <h1>회원 관리</h1>
         <div class="box">
-            <p>회원 관리 페이지입니다.</p>
+            <p class="member-description">회원 관리 페이지입니다.</p>
             <div class="detail-box">
-                <button type="button" class="toggle-btn view-member" style="margin-bottom: 20px">회원 목록 보기</button>
-                <div class="member-list-section" style="display:none; overflow-x: auto;">
+                <button type="button" class="toggle-btn view-member section-toggle-btn">회원 목록 보기</button>
+                <div class="member-list-section hidden-section">
                     <table border="1" cellpadding="10">
                         <thead>
                         <tr>
@@ -47,41 +48,7 @@
         </div>
     </main>
 
-    <script>
-        document.querySelector('.view-member').addEventListener('click', function() {
-            const formSection = document.querySelector('.member-list-section');
-            formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
-        });
-
-        function deleteMember(btn) {
-            const row = btn.closest('tr'); // 버튼이 속한 <tr> 찾기
-            const tds = row.querySelectorAll('td');
-
-            const id = tds[0].innerText; // 첫번째 td는 id
-            const email = tds[2].innerText; // 두번째 td는 email
-            const nickname = tds[3].innerText; // 세번째 td는 nickname
-
-            if (confirm('ID: ' + id + '\n닉네임: ' + nickname + '\n이메일: ' + email + '\n회원 정보를 삭제하시겠습니까?')) {
-                let data = {
-                    memberId : id
-                }
-
-                // 회원 정보 삭제
-                fetch('/admin/deleteMember', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }).then(res => {
-                    if(res.ok) {
-                        alert('삭제 성공');
-                        location.reload();
-                    } else {
-                        alert('에러 발생');
-                        location.reload();
-                    }
-                });
-            }
-        }
-    </script>
+    <script th:src="@{/admin/js/common.js}"></script>
+    <script th:src="@{/admin/js/member.js}"></script>
 </body>
 </html>

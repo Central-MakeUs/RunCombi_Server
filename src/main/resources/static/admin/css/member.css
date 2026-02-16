@@ -1,0 +1,15 @@
+.member-description {
+    margin-bottom: 20px;
+}
+
+.section-toggle-btn {
+    margin-bottom: 20px;
+}
+
+.hidden-section {
+    display: none;
+}
+
+.member-list-section {
+    overflow-x: auto;
+}

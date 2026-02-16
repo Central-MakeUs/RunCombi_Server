@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/admin/css/announcement.css}" />
     <title>공지 관리</title>
 </head>
 <body>
@@ -12,13 +13,13 @@
     <main class="content">
         <h1>공지 관리</h1>
         <div class="box">
-            <p>공지 관리 페이지입니다.</p>
+            <p class="announcement-description">공지 관리 페이지입니다.</p>
             <div class="detail-box">
-                <button type="button" class="toggle-btn add-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 추가</button>
-                <div class="form-section" style="display:none; overflow-x: auto;">
-                    <form id="announcementForm" onsubmit="return submitForm();" style="margin-top: 10px">
+                <button type="button" class="toggle-btn add-announcement section-toggle-btn">공지사항 · 이벤트 추가</button>
+                <div class="form-section hidden-section">
+                    <form id="announcementForm" class="announcement-form" onsubmit="return submitForm();">
                         <!-- 공지/이벤트 선택 -->
-                        <div style="margin-bottom: 15px;">
+                        <div class="option-group">
                             <label>공지 종류</label><br>
                             <label>
                                 <input type="radio" name="type" value="NOTICE" checked /> 공지사항
@@ -27,7 +28,7 @@
                                 <input type="radio" name="type" value="EVENT" /> 이벤트
                             </label>
                         </div>
-                        <div style="margin-bottom: 15px;">
+                        <div class="option-group">
                             <label>노출 여부</label><br>
                             <label>
                                 <input type="radio" name="display" value="Y" checked /> 노출
@@ -47,11 +48,11 @@
                         </div>
 
                         <!-- 이벤트 전용 항목들 (처음에는 숨김) -->
-                        <div class="form-group event-group" style="display:none;">
+                        <div class="form-group event-group">
                             <label>시작일</label>
                             <input type="date" id="startDate" name="startDate" />
                         </div>
-                        <div class="form-group event-group" style="display:none;">
+                        <div class="form-group event-group">
                             <label>종료일</label>
                             <input type="date" id="endDate" name="endDate" />
                         </div>
@@ -59,7 +60,7 @@
                             <label>공지사항 · 이벤트 이미지 URL</label>
                             <input type="text" id="announcementImageUrl" name="announcementImageUrl" />
                         </div>
-                        <div class="form-group event-group" style="display:none;">
+                        <div class="form-group event-group">
                             <label>이벤트 참여 URL</label>
                             <input type="text" id="eventApplyUrl" name="eventApplyUrl" />
                         </div>
@@ -69,8 +70,8 @@
                 </div>
             </div>
             <div class="detail-box">
-                <button type="button" class="toggle-btn delete-announcement" style="margin-bottom: 20px">공지사항 · 이벤트 수정, 삭제</button>
-                <div class="event-list-section" style="display:none; overflow-x: auto;">
+                <button type="button" class="toggle-btn delete-announcement section-toggle-btn">공지사항 · 이벤트 수정, 삭제</button>
+                <div class="event-list-section hidden-section">
                     <table border="1" cellpadding="10">
                         <thead>
                         <tr>
@@ -103,172 +104,7 @@
         </div>
     </main>
 
-    <script>
-        document.querySelector('.add-announcement').addEventListener('click', function() {
-          const formSection = document.querySelector('.form-section');
-          formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
-        });
-
-        document.querySelector('.delete-announcement').addEventListener('click', function() {
-            const formSection = document.querySelector('.event-list-section');
-            formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
-        });
-
-        function submitForm() {
-          // 폼 데이터 수집
-          const type = document.querySelector('input[name="type"]:checked').value;
-          const display = document.querySelector('input[name="display"]:checked').value;
-          const title = document.getElementById('title').value;
-          const content = document.getElementById('content').value;
-          const startDate = document.getElementById('startDate').value;
-          const endDate = document.getElementById('endDate').value;
-          const announcementImageUrl = document.getElementById('announcementImageUrl').value;
-          const eventApplyUrl = document.getElementById('eventApplyUrl').value;
-
-          if(title === "" || content === "") {
-              alert("제목 및 내용은 필수 입력입니다.");
-              return false;
-          }
-
-          let data = {};
-
-          if(type === "NOTICE") {
-              if(announcementImageUrl === ""){
-                  data = {
-                      announcementType: type,
-                      display: display,
-                      title: title,
-                      content: content,
-                      startDate: "1000-01-01",
-                      endDate: "9999-12-31"
-                  }
-              }else {
-                  data = {
-                      announcementType: type,
-                      display: display,
-                      title: title,
-                      content: content,
-                      announcementImageUrl: announcementImageUrl,
-                      startDate: "1000-01-01",
-                      endDate: "9999-12-31"
-                  }
-              }
-          }else if(type === "EVENT") {
-              // 날짜 선택 validate
-              if(startDate === "" || endDate === "") {
-                  alert("이벤트 날짜 선택은 필수입니다.");
-                  return false;
-              }
-
-              if(announcementImageUrl === "" && eventApplyUrl === "") {
-                  data = {
-                      announcementType: type,
-                      display: display,
-                      title: title,
-                      content: content,
-                      startDate: startDate,
-                      endDate: endDate
-                  }
-              }else if(announcementImageUrl === "") {
-                  data = {
-                      announcementType: type,
-                      display: display,
-                      title: title,
-                      content: content,
-                      startDate: startDate,
-                      endDate: endDate,
-                      eventApplyUrl: eventApplyUrl
-                  }
-              }else if(eventApplyUrl === "") {
-                  data = {
-                      announcementType: type,
-                      display: display,
-                      title: title,
-                      content: content,
-                      startDate: startDate,
-                      endDate: endDate,
-                      announcementImageUrl: announcementImageUrl
-                  }
-              }
-          }
-
-          // 공지, 이벤트 등록
-          fetch('/admin/addAnnouncement', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          }).then(res => {
-            if(res.ok) {
-              alert('등록 성공');
-              location.reload();
-            } else {
-              alert('에러 발생');
-            }
-          });
-          return false; // 폼 기본 제출 방지
-        }
-
-        // 라디오 버튼 변경 이벤트 등록
-        document.querySelectorAll('input[name="type"]').forEach(function(radio) {
-          radio.addEventListener('change', toggleFields);
-        });
-
-        // 초기 상태 적용
-        toggleFields();
-
-        function toggleFields() {
-          const selectedType = document.querySelector('input[name="type"]:checked').value;
-          const commonFields = document.querySelectorAll('.common-group');
-          const eventFields = document.querySelectorAll('.event-group');
-
-          if (selectedType === 'NOTICE') {
-            // 공지일 때는 제목과 노출만 보여줌
-            commonFields.forEach(el => el.style.display = '');
-            eventFields.forEach(el => el.style.display = 'none');
-          } else if (selectedType === 'EVENT') {
-            // 이벤트일 때는 전체 필드 보여줌
-            commonFields.forEach(el => el.style.display = '');
-            eventFields.forEach(el => el.style.display = '');
-          }
-        }
-
-        function deleteAnnouncement(btn) {
-            const row = btn.closest('tr'); // 버튼이 속한 <tr> 찾기
-            const tds = row.querySelectorAll('td');
-
-            const id = tds[0].innerText; // 첫번째 td는 id
-            const type = tds[1].innerText; // 두번째 td는 type
-            const title = tds[2].innerText; // 세번째 td는 제목
-
-            if (confirm('ID: ' + id + '\n제목: ' + title + '\n' + type + '을(를) 삭제하시겠습니까?')) {
-                let data = {
-                    announcementId : id
-                }
-
-                // 공지, 이벤트 삭제
-                fetch('/admin/deleteAnnouncement', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }).then(res => {
-                    if(res.ok) {
-                        alert('삭제 성공');
-                        location.reload();
-                    } else {
-                        alert('에러 발생');
-                        location.reload();
-                    }
-                });
-            }
-        }
-
-        function updateAnnouncement(btn) {
-            const row = btn.closest('tr'); // 버튼이 속한 <tr> 찾기
-            const tds = row.querySelectorAll('td');
-            const id = tds[0].innerText; // 첫번째 td는 id
-
-            location.href = "/admin/updateAnnouncement/" + id;
-        }
-    </script>
+    <script th:src="@{/admin/js/common.js}"></script>
+    <script th:src="@{/admin/js/announcement.js}"></script>
 </body>
 </html>

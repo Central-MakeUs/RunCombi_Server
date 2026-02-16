@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/admin/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/admin/css/statistics.css}" />
+    <title>사용 통계</title>
+</head>
+<body>
+    <div th:insert="admin/fragments/navbar :: navbar"></div>
+
+    <main class="content">
+        <h1>사용통계</h1>
+        <div class="box">
+            <div class="stats-toolbar">
+                <div class="bucket-section">
+                    <div class="section-title">집계 단위</div>
+                    <div class="bucket-buttons">
+                        <button type="button" class="bucket-btn" data-bucket="DAY">1일 단위</button>
+                        <button type="button" class="bucket-btn active" data-bucket="WEEK">1주일 단위</button>
+                        <button type="button" class="bucket-btn" data-bucket="MONTH">1달 단위</button>
+                        <button type="button" class="bucket-btn" data-bucket="YEAR">1년 단위</button>
+                    </div>
+                </div>
+                <div class="custom-section">
+                    <div class="section-title">커스텀 기간</div>
+                    <div class="date-filter">
+                        <label for="startDate">시작일</label>
+                        <input type="date" id="startDate" />
+                        <label for="endDate">종료일</label>
+                        <input type="date" id="endDate" />
+                        <button type="button" id="customSearchBtn">커스텀 조회</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label">선택 단위</div>
+                    <div class="value" id="summaryBucket">1주일 단위</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">조회 기간</div>
+                    <div class="value" id="summaryRange">-</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">총 생성 건수</div>
+                    <div class="value" id="summaryTotal">0</div>
+                </div>
+            </div>
+
+            <div class="chart-panel">
+                <div id="barChart" class="bar-chart"></div>
+                <div id="chartEmpty" class="empty-message hidden">조회 기간 내 데이터가 없습니다.</div>
+            </div>
+
+            <div class="detail-box">
+                <h3 class="detail-title">집계 상세</h3>
+                <div class="table-wrapper">
+                    <table border="1" cellpadding="10">
+                        <thead>
+                        <tr>
+                            <th>구간</th>
+                            <th>생성 건수</th>
+                        </tr>
+                        </thead>
+                        <tbody id="statsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script th:src="@{/admin/js/common.js}"></script>
+    <script th:src="@{/admin/js/statistics.js}"></script>
+</body>
+</html>

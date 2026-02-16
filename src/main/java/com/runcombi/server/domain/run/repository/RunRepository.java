@@ -47,4 +47,7 @@ public interface RunRepository extends JpaRepository<Run, Long> {
 
     // 일자로 산책 데이터를 가져오기
     List<Run> findByMemberAndRegDateBetween(Member member, LocalDateTime start, LocalDateTime end);
+
+    // 관리자 사용통계 집계를 위한 기간 조회
+    List<Run> findByRegDateGreaterThanEqualAndRegDateLessThan(LocalDateTime start, LocalDateTime end);
 }

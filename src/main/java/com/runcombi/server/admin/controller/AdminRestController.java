@@ -1,5 +1,8 @@
 package com.runcombi.server.admin.controller;
 
+import com.runcombi.server.admin.dto.UsageStatsBucketType;
+import com.runcombi.server.admin.dto.UsageStatsResponseDto;
+import com.runcombi.server.admin.service.AdminStatisticsService;
 import com.runcombi.server.domain.announcement.dto.RequestAddAnnouncementDto;
 import com.runcombi.server.domain.announcement.dto.RequestAnnouncementIdDto;
 import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
@@ -16,10 +19,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @Tag(name = "관리자", description = "관리자 전용 공지/회원/버전 관리 API")
 @RestController
@@ -30,6 +38,50 @@ public class AdminRestController {
     private final AnnouncementService announcementService;
     private final MemberService memberService;
     private final VersionService versionService;
+    private final AdminStatisticsService adminStatisticsService;
+
+    @Operation(
+            summary = "관리자 사용통계 조회",
+            description = "Run 테이블의 생성 건수를 집계 단위(`DAY`, `WEEK`, `MONTH`, `YEAR`)와 기간으로 조회합니다.\n" +
+                    "기간을 비워 호출하면 단위별 기본 기간으로 조회됩니다. (기본 단위는 WEEK)"
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "bucketType": "WEEK",
+                                                "startDate": "2025-12-01",
+                                                "endDate": "2026-02-16",
+                                                "totalCount": 245,
+                                                "series": [
+                                                  {"label": "2025-W49", "count": 18},
+                                                  {"label": "2025-W50", "count": 22},
+                                                  {"label": "2025-W51", "count": 19}
+                                                ]
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "관리자 인증 실패")
+    })
+    @GetMapping("/usage-stats")
+    public ApiResponse<UsageStatsResponseDto> getUsageStats(
+            @RequestParam(defaultValue = "WEEK") UsageStatsBucketType bucketType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        UsageStatsResponseDto response = adminStatisticsService.getRunUsageStats(bucketType, startDate, endDate);
+        return ApiResponse.onSuccess(response);
+    }
 
     @Operation(
             summary = "관리자 공지/이벤트 등록",

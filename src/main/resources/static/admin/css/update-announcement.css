@@ -1,0 +1,43 @@
+.update-form-section {
+    overflow-x: auto;
+}
+
+.update-form {
+    margin-top: 10px;
+}
+
+.option-group {
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #222;
+    color: #fff;
+}
+
+.preview-label {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.announcementImage {
+    margin-top: 10px;
+    width: 100%;
+}
