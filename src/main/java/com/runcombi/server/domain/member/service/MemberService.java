@@ -207,6 +207,16 @@ public class MemberService {
                 .build();
     }
 
+    public GetMemberDetailDto getMemberDetailForAdmin(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+
+        List<Pet> petList = petRepository.findAllByMember(member);
+        return getMemberPetDetail(member, petList);
+    }
+
     private List<TermType> getMemberTerms(Member member) {
         List<TermType> returnTermList = new ArrayList<>();
         List<MemberTerm> termList = memberTermRepository.findByMember(member);

@@ -1,0 +1,64 @@
+.version-form-section,
+.version-history-section,
+.table-scroll {
+    overflow-x: auto;
+}
+
+.section-title-center {
+    text-align: center;
+}
+
+.section-divider {
+    margin: 30px 0;
+}
+
+.os-select-wrap {
+    margin-top: 5px;
+}
+
+.version-select {
+    background: #333;
+    color: #D7FE63;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #555;
+    padding: 8px;
+}
+
+.field-label-spacer {
+    margin-top: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #222;
+    color: #fff;
+}
+
+.version-detail-cell {
+    padding: 5px 10px 5px 5px;
+}
+
+.version-detail-textarea {
+    width: 100%;
+    background: #222;
+    color: #D7FE63;
+    resize: none;
+    border: 1px solid #555;
+    border-radius: 4px;
+}

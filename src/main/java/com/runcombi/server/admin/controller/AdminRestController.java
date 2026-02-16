@@ -1,9 +1,13 @@
 package com.runcombi.server.admin.controller;
 
+import com.runcombi.server.admin.dto.UsageStatsBucketType;
+import com.runcombi.server.admin.dto.UsageStatsResponseDto;
+import com.runcombi.server.admin.service.AdminStatisticsService;
 import com.runcombi.server.domain.announcement.dto.RequestAddAnnouncementDto;
 import com.runcombi.server.domain.announcement.dto.RequestAnnouncementIdDto;
 import com.runcombi.server.domain.announcement.dto.RequestUpdateAnnouncementDto;
 import com.runcombi.server.domain.announcement.service.AnnouncementService;
+import com.runcombi.server.domain.member.dto.GetMemberDetailDto;
 import com.runcombi.server.domain.member.dto.RequestMemberIdDto;
 import com.runcombi.server.domain.member.service.MemberService;
 import com.runcombi.server.domain.version.dto.RequestVersionDto;
@@ -16,10 +20,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @Tag(name = "관리자", description = "관리자 전용 공지/회원/버전 관리 API")
 @RestController
@@ -30,6 +39,50 @@ public class AdminRestController {
     private final AnnouncementService announcementService;
     private final MemberService memberService;
     private final VersionService versionService;
+    private final AdminStatisticsService adminStatisticsService;
+
+    @Operation(
+            summary = "관리자 사용통계 조회",
+            description = "Run 테이블의 생성 건수를 집계 단위(`DAY`, `WEEK`, `MONTH`, `YEAR`)와 기간으로 조회합니다.\n" +
+                    "기간을 비워 호출하면 단위별 기본 기간으로 조회됩니다. (기본 단위는 WEEK)"
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "bucketType": "WEEK",
+                                                "startDate": "2025-12-01",
+                                                "endDate": "2026-02-16",
+                                                "totalCount": 245,
+                                                "series": [
+                                                  {"label": "2025-W49", "count": 18},
+                                                  {"label": "2025-W50", "count": 22},
+                                                  {"label": "2025-W51", "count": 19}
+                                                ]
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "관리자 인증 실패")
+    })
+    @GetMapping("/usage-stats")
+    public ApiResponse<UsageStatsResponseDto> getUsageStats(
+            @RequestParam(defaultValue = "WEEK") UsageStatsBucketType bucketType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        UsageStatsResponseDto response = adminStatisticsService.getRunUsageStats(bucketType, startDate, endDate);
+        return ApiResponse.onSuccess(response);
+    }
 
     @Operation(
             summary = "관리자 공지/이벤트 등록",
@@ -205,6 +258,74 @@ public class AdminRestController {
         memberService.deleteAccount(requestMemberIdDto.getMemberId());
 
         return ApiResponse.onSuccess("삭제에 성공하였습니다.");
+    }
+
+    @Operation(
+            summary = "관리자 회원 상세 조회",
+            description = "관리자가 회원 1명의 상세 정보를 조회합니다. 회원 기본 정보와 함께 최대 2마리의 반려견 정보를 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "member": {
+                                                  "memberId": 15,
+                                                  "provider": "KAKAO",
+                                                  "email": "user@runcombi.com",
+                                                  "nickname": "달리는몽이",
+                                                  "gender": "FEMALE",
+                                                  "height": 165.5,
+                                                  "weight": 54.2,
+                                                  "isActive": "LIVE",
+                                                  "profileImgUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/member/15xxx",
+                                                  "profileImgKey": "member/15xxx",
+                                                  "memberTerms": ["TERMS_OF_SERVICE", "PRIVACY_POLICY", "LOCATION_SERVICE_AGREEMENT"]
+                                                },
+                                                "petList": [
+                                                  {
+                                                    "petId": 21,
+                                                    "name": "몽이",
+                                                    "age": 4,
+                                                    "weight": 6.2,
+                                                    "runStyle": "WALKING",
+                                                    "petImageUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/pet/21xxx",
+                                                    "petImageKey": "pet/21xxx"
+                                                  }
+                                                ],
+                                                "memberStatus": "LIVE"
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음 (MEMBER0001)",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    name = "실패 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "MEMBER0001",
+                                              "message": "사용자가 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """
+                            )
+                    ))
+    })
+    @GetMapping("/member/detail")
+    public ApiResponse<GetMemberDetailDto> getMemberDetail(
+            @RequestParam Long memberId
+    ) {
+        return ApiResponse.onSuccess(memberService.getMemberDetailForAdmin(memberId));
     }
 
     @Operation(

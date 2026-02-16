@@ -1,13 +1,11 @@
 package com.runcombi.server.admin.controller;
 
-import com.runcombi.server.domain.announcement.dto.ResponseAnnouncementDto;
 import com.runcombi.server.domain.announcement.entity.Announcement;
 import com.runcombi.server.domain.announcement.service.AnnouncementService;
 import com.runcombi.server.domain.member.entity.Member;
 import com.runcombi.server.domain.member.entity.Role;
 import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.version.entity.OS;
-import com.runcombi.server.domain.version.entity.Version;
 import com.runcombi.server.domain.version.service.VersionService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +80,11 @@ public class AdminController {
         List<Announcement> eventList = announcementService.getEventList();
         model.addAttribute("eventList", eventList);
         return "admin/event";
+    }
+
+    @GetMapping("/statistics")
+    public String statisticsPage(Model model) {
+        return "admin/statistics";
     }
 
     @GetMapping("/updateAnnouncement/{id}")
