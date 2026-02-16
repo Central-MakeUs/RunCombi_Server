@@ -3,3 +3,7 @@ spring:
     name: server
   profiles:
     active: ${RUN_ENV:dev}
+
+springdoc:
+  swagger-ui:
+    path: /admin/swagger-ui.html

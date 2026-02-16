@@ -9,7 +9,10 @@ import com.runcombi.server.domain.member.repository.MemberRepository;
 import com.runcombi.server.domain.version.entity.OS;
 import com.runcombi.server.domain.version.entity.Version;
 import com.runcombi.server.domain.version.service.VersionService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.HashMap;
 import java.util.List;
 
+@Hidden
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
@@ -27,6 +31,18 @@ public class AdminController {
     private final AnnouncementService announcementService;
     private final MemberRepository memberRepository;
     private final VersionService versionService;
+
+    @GetMapping({"", "/"})
+    public String adminEntry(Authentication authentication) {
+        boolean isAuthenticated = authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken);
+
+        if (isAuthenticated) {
+            return "redirect:/admin/home";
+        }
+        return "redirect:/admin/login";
+    }
 
     @GetMapping("/login")
     public String loginPage(Model model) {
