@@ -1,12 +1,16 @@
 package com.runcombi.server.auth.jwt.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Schema(description = "토큰 재발급 응답 DTO")
 public class ResponseTokenDto {
+    @Schema(description = "새로 발급된 Refresh Token", example = "eyJhbGciOiJIUzI1NiJ9...")
     private String refreshToken;
+    @Schema(description = "새로 발급된 Access Token", example = "eyJhbGciOiJIUzI1NiJ9...")
     private String accessToken;
 }
