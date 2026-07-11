@@ -50,4 +50,23 @@ public interface RunRepository extends JpaRepository<Run, Long> {
 
     // 관리자 사용통계 집계를 위한 기간 조회
     List<Run> findByRegDateGreaterThanEqualAndRegDateLessThan(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT DISTINCT r FROM Run r " +
+            "JOIN FETCH r.member m " +
+            "LEFT JOIN FETCH r.runPets rp " +
+            "LEFT JOIN FETCH rp.pet p " +
+            "WHERE r.regDate >= :start AND r.regDate < :end")
+    List<Run> findWithMemberAndPetsByRegDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT DISTINCT r FROM Run r " +
+            "JOIN FETCH r.member m " +
+            "LEFT JOIN FETCH r.runPets rp " +
+            "LEFT JOIN FETCH rp.pet p " +
+            "WHERE m.memberId = :memberId AND r.regDate >= :start AND r.regDate < :end " +
+            "ORDER BY r.regDate DESC")
+    List<Run> findWithMemberAndPetsByMemberIdAndRegDateRange(
+            @Param("memberId") Long memberId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }

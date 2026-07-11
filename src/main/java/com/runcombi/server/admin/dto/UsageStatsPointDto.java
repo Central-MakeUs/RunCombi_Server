@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -12,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class UsageStatsPointDto {
     private String label;
     private Long count;
+    private LocalDate bucketStartDate;
+    private LocalDate bucketEndDate;
 }
