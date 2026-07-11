@@ -33,7 +33,7 @@ public class CalenderController {
 
     @Operation(
             summary = "월별 산책 데이터 조회",
-            description = "요청한 연/월의 날짜별 산책 ID 목록과 월 평균 통계(시간/칼로리/거리/주요 산책유형)를 반환합니다."
+            description = "요청한 연/월의 날짜별 산책 ID 목록과 월 평균 및 총합 통계(시간/칼로리/거리/주요 산책유형)를 반환합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "월 데이터 조회 성공",
@@ -52,8 +52,11 @@ public class CalenderController {
                                                   {"date": "20260216", "runId": [502, 503]}
                                                 ],
                                                 "avgTime": 43,
+                                                "totalTime": 163,
                                                 "avgCal": 233,
+                                                "totalCal": 2953,
                                                 "avgDistance": 3.41,
+                                                "totalDistance": 14.21,
                                                 "mostRunStyle": "WALKING"
                                               }
                                             }
