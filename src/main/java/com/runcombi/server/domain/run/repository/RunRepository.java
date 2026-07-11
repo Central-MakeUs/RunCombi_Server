@@ -26,13 +26,25 @@ public interface RunRepository extends JpaRepository<Run, Long> {
     @Query("SELECT FLOOR(AVG(r.runTime)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Integer findAverageMemberRunTime(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    // 한 달 총 산책 시간 반환
+    @Query("SELECT SUM(r.runTime) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Long findTotalMemberRunTime(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     // 한 달 소모 칼로리 평균을 반환 (소수점 버림)
     @Query("SELECT FLOOR(AVG(r.memberCal)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Integer findAverageMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    // 한 달 총 소모 칼로리 반환
+    @Query("SELECT SUM(r.memberCal) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Long findTotalMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     // 한 달 평균 산책 거리 반환 (소수점 2번째 자리까지)
     @Query("SELECT ROUND(AVG(r.runDistance), 2) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Double findAverageRunDistance(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    // 한 달 총 산책 거리 반환 (소수점 2번째 자리까지)
+    @Query("SELECT ROUND(SUM(r.runDistance), 2) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Double findTotalRunDistance(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     // 한 달 가장 많은 산책 스타일
     @Query(value = "SELECT member_run_style, COUNT(*) AS cnt FROM run " +

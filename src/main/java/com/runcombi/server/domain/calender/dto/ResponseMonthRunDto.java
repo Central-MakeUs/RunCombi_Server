@@ -14,10 +14,16 @@ public class ResponseMonthRunDto {
     private List<RequestMonthRunDto>  monthData;   // 한 달 산책 데이터
     @Schema(description = "월 평균 산책 시간(분)", example = "43")
     private Integer avgTime;
+    @Schema(description = "월 총 산책 시간(분)", example = "163")
+    private Integer totalTime;
     @Schema(description = "월 평균 소모 칼로리(kcal)", example = "233")
     private Integer avgCal;                 // 평균 칼로리
+    @Schema(description = "월 총 소모 칼로리(kcal)", example = "2953")
+    private Integer totalCal;               // 월 칼로리
     @Schema(description = "월 평균 산책 거리(km)", example = "3.41")
     private Double avgDistance;             // 평균 산책 거리
+    @Schema(description = "월 총 산책 거리(km)", example = "14.21")
+    private Double totalDistance;           // 월 산책 거리
     @Schema(description = "월 최다 산책 유형", example = "WALKING")
     private String mostRunStyle;            // 한 달 가장 많은 산책 유형
 }

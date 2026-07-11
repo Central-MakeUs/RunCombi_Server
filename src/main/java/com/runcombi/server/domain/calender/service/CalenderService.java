@@ -89,11 +89,22 @@ public class CalenderService {
         // 한 달 평균 산책 시간 계산 ( null / 정수 )
         Integer avgTime = runRepository.findAverageMemberRunTime(member, startOfMonth, endOfMonth);
 
+        // 한 달 총 산책 시간 ( null / 정수 )
+        Long totalTimeValue = runRepository.findTotalMemberRunTime(member, startOfMonth, endOfMonth);
+        Integer totalTime = totalTimeValue == null ? null : totalTimeValue.intValue();
+
         // 한 달 평균 소모 칼로리 계산 ( null / 정수 )
         Integer avgCal = runRepository.findAverageMemberCal(member, startOfMonth, endOfMonth);
 
+        // 한 달 총 소모 칼로리 ( null / 정수 )
+        Long totalCalValue = runRepository.findTotalMemberCal(member, startOfMonth, endOfMonth);
+        Integer totalCal = totalCalValue == null ? null : totalCalValue.intValue();
+
         // 한 달 평균 산책 거리 계산 ( null / 소수점 2자리 )
         Double avgDistance = runRepository.findAverageRunDistance(member, startOfMonth, endOfMonth);
+
+        // 한 달 총 산책 거리 ( null / 소수점 2자리 )
+        Double totalDistance = runRepository.findTotalRunDistance(member, startOfMonth, endOfMonth);
 
         // 한 달 내 가장 많은 산책 스타일 계산
         String topRunStyle = null;
@@ -103,7 +114,7 @@ public class CalenderService {
             topRunStyle = (String) first[0];
         }
 
-        return new ResponseMonthRunDto(resultList, avgTime, avgCal, avgDistance, topRunStyle);
+        return new ResponseMonthRunDto(resultList, avgTime, totalTime, avgCal, totalCal, avgDistance, totalDistance, topRunStyle);
     }
 
     public List<ResponseDayRunDto> getDayData(Member member, int year, int month, int day) {
