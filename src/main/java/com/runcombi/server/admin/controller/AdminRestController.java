@@ -1,6 +1,8 @@
 package com.runcombi.server.admin.controller;
 
 import com.runcombi.server.admin.dto.UsageStatsBucketType;
+import com.runcombi.server.admin.dto.UsageStatsMemberRunsResponseDto;
+import com.runcombi.server.admin.dto.UsageStatsMembersResponseDto;
 import com.runcombi.server.admin.dto.UsageStatsResponseDto;
 import com.runcombi.server.admin.service.AdminStatisticsService;
 import com.runcombi.server.domain.announcement.dto.RequestAddAnnouncementDto;
@@ -63,9 +65,9 @@ public class AdminRestController {
                                                 "endDate": "2026-02-16",
                                                 "totalCount": 245,
                                                 "series": [
-                                                  {"label": "2025-W49", "count": 18},
-                                                  {"label": "2025-W50", "count": 22},
-                                                  {"label": "2025-W51", "count": 19}
+                                                  {"label": "2025-49주", "count": 18, "bucketStartDate": "2025-12-01", "bucketEndDate": "2025-12-07"},
+                                                  {"label": "2025-50주", "count": 22, "bucketStartDate": "2025-12-08", "bucketEndDate": "2025-12-14"},
+                                                  {"label": "2025-51주", "count": 19, "bucketStartDate": "2025-12-15", "bucketEndDate": "2025-12-21"}
                                                 ]
                                               }
                                             }
@@ -82,6 +84,123 @@ public class AdminRestController {
     ) {
         UsageStatsResponseDto response = adminStatisticsService.getRunUsageStats(bucketType, startDate, endDate);
         return ApiResponse.onSuccess(response);
+    }
+
+    @Operation(
+            summary = "관리자 통계 버킷별 이용 회원 조회",
+            description = "통계 그래프에서 선택한 기간(버킷) 내 실제 이용 회원 목록과 회원별 런 횟수/시간/거리 요약을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "startDate": "2026-02-01",
+                                                "endDate": "2026-02-07",
+                                                "totalRunCount": 38,
+                                                "totalMemberCount": 12,
+                                                "members": [
+                                                  {
+                                                    "memberId": 15,
+                                                    "email": "user@runcombi.com",
+                                                    "nickname": "달리는몽이",
+                                                    "provider": "KAKAO",
+                                                    "profileImgUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/member/15xxx",
+                                                    "memberStatus": "LIVE",
+                                                    "runCount": 6,
+                                                    "totalRunTime": 184,
+                                                    "totalRunDistance": 22.53,
+                                                    "lastRunDate": "2026-02-07T19:33:12"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "관리자 인증 실패")
+    })
+    @GetMapping("/usage-stats/members")
+    public ApiResponse<UsageStatsMembersResponseDto> getUsageStatsMembers(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        return ApiResponse.onSuccess(adminStatisticsService.getUsageMembers(startDate, endDate));
+    }
+
+    @Operation(
+            summary = "관리자 통계 버킷 내 회원 런 상세 조회",
+            description = "선택한 회원이 해당 통계 기간에 생성한 런 목록을 조회합니다. 런 기본 정보와 반려견별 소모 칼로리 정보가 함께 내려옵니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": true,
+                                              "code": "STATUS200",
+                                              "message": "요청에 성공하셨습니다.",
+                                              "result": {
+                                                "memberId": 15,
+                                                "email": "user@runcombi.com",
+                                                "nickname": "달리는몽이",
+                                                "startDate": "2026-02-01",
+                                                "endDate": "2026-02-07",
+                                                "totalRunCount": 2,
+                                                "runs": [
+                                                  {
+                                                    "runId": 1402,
+                                                    "regDate": "2026-02-07T19:33:12",
+                                                    "runTime": 31,
+                                                    "runDistance": 3.85,
+                                                    "memberCal": 242,
+                                                    "memberRunStyle": "RUNNING",
+                                                    "runEvaluating": "NORMAL",
+                                                    "memo": "오늘은 인터벌 위주",
+                                                    "runImageUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/run/1402xxx",
+                                                    "routeImageUrl": "https://runcombi.s3.ap-northeast-2.amazonaws.com/route/1402xxx",
+                                                    "pets": [
+                                                      {"petId": 21, "petName": "몽이", "petCal": 66}
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                            """
+                            )
+                    )),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "회원 미존재 (MEMBER0001)",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    name = "실패 예시",
+                                    value = """
+                                            {
+                                              "isSuccess": false,
+                                              "code": "MEMBER0001",
+                                              "message": "사용자가 존재하지 않습니다.",
+                                              "result": null
+                                            }
+                                            """
+                            )
+                    ))
+    })
+    @GetMapping("/usage-stats/member-runs")
+    public ApiResponse<UsageStatsMemberRunsResponseDto> getUsageStatsMemberRuns(
+            @RequestParam Long memberId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        return ApiResponse.onSuccess(adminStatisticsService.getMemberRuns(memberId, startDate, endDate));
     }
 
     @Operation(
