@@ -26,13 +26,25 @@ public interface RunRepository extends JpaRepository<Run, Long> {
     @Query("SELECT FLOOR(AVG(r.runTime)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Integer findAverageMemberRunTime(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    // 한 달 총 산책 시간 반환
+    @Query("SELECT SUM(r.runTime) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Long findTotalMemberRunTime(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     // 한 달 소모 칼로리 평균을 반환 (소수점 버림)
     @Query("SELECT FLOOR(AVG(r.memberCal)) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Integer findAverageMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    // 한 달 총 소모 칼로리 반환
+    @Query("SELECT SUM(r.memberCal) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Long findTotalMemberCal(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     // 한 달 평균 산책 거리 반환 (소수점 2번째 자리까지)
     @Query("SELECT ROUND(AVG(r.runDistance), 2) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
     Double findAverageRunDistance(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    // 한 달 총 산책 거리 반환 (소수점 2번째 자리까지)
+    @Query("SELECT ROUND(SUM(r.runDistance), 2) FROM Run r WHERE r.member = :member AND r.regDate >= :start AND r.regDate < :end")
+    Double findTotalRunDistance(@Param("member") Member member, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     // 한 달 가장 많은 산책 스타일
     @Query(value = "SELECT member_run_style, COUNT(*) AS cnt FROM run " +
@@ -50,4 +62,23 @@ public interface RunRepository extends JpaRepository<Run, Long> {
 
     // 관리자 사용통계 집계를 위한 기간 조회
     List<Run> findByRegDateGreaterThanEqualAndRegDateLessThan(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT DISTINCT r FROM Run r " +
+            "JOIN FETCH r.member m " +
+            "LEFT JOIN FETCH r.runPets rp " +
+            "LEFT JOIN FETCH rp.pet p " +
+            "WHERE r.regDate >= :start AND r.regDate < :end")
+    List<Run> findWithMemberAndPetsByRegDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT DISTINCT r FROM Run r " +
+            "JOIN FETCH r.member m " +
+            "LEFT JOIN FETCH r.runPets rp " +
+            "LEFT JOIN FETCH rp.pet p " +
+            "WHERE m.memberId = :memberId AND r.regDate >= :start AND r.regDate < :end " +
+            "ORDER BY r.regDate DESC")
+    List<Run> findWithMemberAndPetsByMemberIdAndRegDateRange(
+            @Param("memberId") Long memberId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }
